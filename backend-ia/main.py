@@ -7,6 +7,8 @@ from openai import OpenAI
 from supabase import create_client, Client
 from typing import Optional, List, Dict, Any
 
+from solana_service import seal_diagnosis_on_chain
+
 load_dotenv()
 
 app = FastAPI(title="Medical AI Assistant API")
@@ -42,6 +44,13 @@ class AssistantResponse(BaseModel):
     patient_id: int
 
 
+class RecordSealRequest(BaseModel):
+    patient_id: int
+    diagnosis_text: str
+    notes: Optional[str] = None
+    date: Optional[str] = None
+
+
 # Health check endpoint
 @app.get("/")
 async def root():
@@ -66,6 +75,59 @@ async def fetch_patient_history(patient_id: int) -> List[Dict[str, Any]]:
     except Exception as e:
         print(f"Error fetching patient history: {e}")
         return []
+
+
+<<<<<<< HEAD
+=======
+async def persist_record_to_supabase(
+    patient_id: int,
+    diagnosis_text: str,
+    notes: Optional[str] = None,
+    date: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Seal the diagnosis on-chain and persist metadata to Supabase."""
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise HTTPException(status_code=500, detail="Supabase configuration is missing.")
+
+    chain_result = seal_diagnosis_on_chain(patient_id, diagnosis_text)
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    record_payload = {
+        "patient_id": patient_id,
+        "patient_id_hash": chain_result["patient_id_hash"],
+        "medical_hash": chain_result["medical_hash"],
+        "on_chain_pda": chain_result["record_pda"],
+        "transaction_signature": chain_result["tx_signature"],
+        "notes": notes or "",
+        "date": date or "",
+    }
+
+    response = supabase.table("medical_records").insert(record_payload).execute()
+    if response.status_code != 201 and response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Failed to save medical record to Supabase.")
+
+    return chain_result
+
+
+@app.post("/api/v1/assistant/seal_record")
+async def seal_record(request: RecordSealRequest):
+    """Seal a medical diagnosis on Solana and store the metadata in Supabase."""
+    try:
+        result = await persist_record_to_supabase(
+            patient_id=request.patient_id,
+            diagnosis_text=request.diagnosis_text,
+            notes=request.notes,
+            date=request.date,
+        )
+        return {
+            "status": "sealed",
+            "record_pda": result["record_pda"],
+            "tx_signature": result["tx_signature"],
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error sealing record: {e}")
 
 
 # Virtual Assistant endpoint

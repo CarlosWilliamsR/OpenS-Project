@@ -1,0 +1,6 @@
+[programs.devnet]
+opens_anchor = "REPLACE_WITH_PROGRAM_ID"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"

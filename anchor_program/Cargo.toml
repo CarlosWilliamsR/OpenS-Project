@@ -1,0 +1,11 @@
+[package]
+name = "opens_anchor"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "opens_anchor"
+crate-type = ["cdylib"]
+
+[dependencies]
+anchor-lang = "0.34.0"
