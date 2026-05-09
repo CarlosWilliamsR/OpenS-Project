@@ -1,4 +1,4 @@
-Este README estructura la información de **OpenS** integrando su visión estratégica, arquitectura técnica y los diagramas de flujo solicitados, basándose en la documentación proporcionada.
+
 
 ---
 
