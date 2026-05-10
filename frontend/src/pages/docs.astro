@@ -5,63 +5,56 @@ import Navbar from '../components/Navbar.astro';
 
 <BaseLayout title="Documentación Técnica — OpenS Project">
   <Navbar />
-  <main class="max-w-5xl mx-auto px-6 py-12 dot-grid text-[var(--text-color)] transition-colors duration-300">
+  <main class="max-w-5xl mx-auto px-6 py-12 dot-grid">
     <!-- Header Documentation -->
     <div class="mb-16 animate-fade-in">
-      <div class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--card-bg)] border border-[var(--card-border)] text-slate-500 font-mono text-[10px] uppercase tracking-[0.2em] mb-4 transition-colors">
-        <span class="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 animate-led"></span>
-        <span data-es="TIPO_DOCUMENTO: ESPECIFICACIONES_SISTEMA" data-en="DOC_TYPE: SYSTEM_SPECIFICATIONS">TIPO_DOCUMENTO: ESPECIFICACIONES_SISTEMA</span>
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-slate-200 text-slate-500 font-mono text-[10px] uppercase tracking-[0.2em] mb-4">
+        <span class="w-1.5 h-1.5 bg-blue-600 animate-led"></span>
+        DOCUMENT_TYPE: SYSTEM_SPECIFICATIONS
       </div>
-      <h1 class="text-5xl font-black tracking-tighter uppercase mb-4" data-es="Documentación Técnica" data-en="Technical Documentation">Documentación Técnica</h1>
-      <p class="text-sm font-mono text-slate-500 dark:text-slate-400 uppercase leading-relaxed" data-es="Guía integral sobre la arquitectura, diseño y operatividad del ecosistema OpenS." data-en="Comprehensive guide on the architecture, design, and operability of the OpenS ecosystem.">
+      <h1 class="text-5xl font-black text-slate-900 tracking-tighter uppercase mb-4">Documentación Técnica</h1>
+      <p class="text-sm font-mono text-slate-500 uppercase leading-relaxed">
         Guía integral sobre la arquitectura, diseño y operatividad del ecosistema OpenS.
       </p>
     </div>
 
     <!-- Navigation Index -->
-    <div class="grid md:grid-cols-4 gap-px bg-slate-200 dark:bg-slate-700 border-technical mb-16 animate-fade-in transition-colors" style="animation-delay: 0.1s;">
-      <a href="#arquitectura" class="p-6 bg-[var(--card-bg)] hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
-        <p class="medical-label group-hover:text-blue-600 dark:group-hover:text-blue-400" data-es=">> Arquitectura" data-en=">> Architecture">>> Arquitectura</p>
-      </a>
-      <a href="#magic-pipeline" class="p-6 bg-[var(--card-bg)] hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
-        <p class="medical-label group-hover:text-blue-600 dark:group-hover:text-blue-400">>> Magic Pipeline</p>
-      </a>
-      <a href="#infraestructura" class="p-6 bg-[var(--card-bg)] hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
-        <p class="medical-label group-hover:text-blue-600 dark:group-hover:text-blue-400" data-es=">> Infraestructura" data-en=">> Infrastructure">>> Infraestructura</p>
-      </a>
-      <a href="#identidad-visual" class="p-6 bg-[var(--card-bg)] hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
-        <p class="medical-label group-hover:text-blue-600 dark:group-hover:text-blue-400" data-es=">> Visual" data-en=">> Visuals">>> Visual</p>
-      </a>
+    <div class="grid md:grid-cols-3 gap-px bg-slate-200 border-technical mb-16 animate-fade-in" style="animation-delay: 0.1s;">
+      {['Arquitectura', 'Magic Pipeline', 'Identidad Visual'].map(item => (
+        <a href={`#${item.toLowerCase().replace(' ', '-')}`} class="p-6 bg-white hover:bg-slate-50 transition-colors group">
+          <p class="medical-label group-hover:text-blue-600">>> {item}</p>
+        </a>
+      ))}
     </div>
 
     <!-- Section: Arquitectura -->
     <section id="arquitectura" class="mb-24 animate-fade-in" style="animation-delay: 0.2s;">
       <div class="flex items-center gap-4 mb-8">
-        <h2 class="text-2xl font-black uppercase tracking-tight" data-es="01. Arquitectura del Sistema" data-en="01. System Architecture">01. Arquitectura del Sistema</h2>
-        <div class="h-px flex-1 bg-[var(--card-border)]"></div>
+        <h2 class="text-2xl font-black uppercase tracking-tight">01. Arquitectura del Sistema</h2>
+        <div class="h-px flex-1 bg-slate-200"></div>
       </div>
       
-      <div class="medical-card p-8 mb-8">
-        <p class="terminal-text mb-6 text-slate-600 dark:text-slate-300" data-es="OpenS utiliza una arquitectura híbrida diseñada para la resiliencia en entornos clínicos críticos. El sistema prioriza la ejecución local mediante nodos Ollama cuando la conectividad es inestable." data-en="OpenS uses a hybrid architecture designed for resilience in critical clinical environments. The system prioritizes local execution via Ollama nodes when connectivity is unstable.">
+      <div class="medical-card p-8 bg-white mb-8">
+        <p class="terminal-text mb-6">
           OpenS utiliza una arquitectura híbrida diseñada para la resiliencia en entornos clínicos críticos. 
           El sistema prioriza la ejecución local mediante nodos Ollama cuando la conectividad es inestable.
         </p>
         
         <!-- Flowchart: Architecture -->
-        <div class="border border-[var(--card-border)] p-8 bg-slate-50 dark:bg-slate-900 relative overflow-hidden transition-colors">
-          <div class="absolute top-0 left-0 w-full h-[1px] bg-blue-600/10 dark:bg-blue-400/20 animate-scanner"></div>
+        <div class="border-technical p-8 bg-slate-50 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-[1px] bg-blue-600/10 animate-scanner"></div>
           <div class="flex flex-col items-center gap-8 font-mono text-[10px]">
-            <div class="p-4 border border-[var(--card-border)] bg-[var(--card-bg)] w-48 text-center text-[var(--text-color)]">FRONTEND (ASTRO + TAILWIND)</div>
-            <div class="text-blue-600 dark:text-blue-400">▼ API_REQUEST</div>
-            <div class="p-4 border border-[var(--card-border)] bg-[var(--card-bg)] w-48 text-center text-[var(--text-color)]">BACKEND (FASTAPI)</div>
+            <div class="p-4 border-technical bg-white w-48 text-center">FRONTEND (ASTRO + TAILWIND)</div>
+            <div class="text-blue-600">▼ API_REQUEST</div>
+            <div class="p-4 border-technical bg-white w-48 text-center">BACKEND (FASTAPI)</div>
             <div class="flex gap-12">
               <div class="flex flex-col items-center gap-4">
-                <div class="text-emerald-600 dark:text-emerald-400">IF ONLINE</div>
-                <div class="p-4 border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 w-32 text-center text-[var(--text-color)]">GEMINI 1.5 FLASH</div>
+                <div class="text-emerald-600">IF ONLINE</div>
+                <div class="p-4 border-technical bg-emerald-50 w-32 text-center">GEMINI 1.5 FLASH</div>
               </div>
               <div class="flex flex-col items-center gap-4">
-                <div class="text-amber-600 dark:text-amber-400">IF OFFLINE</div>
-                <div class="p-4 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 w-32 text-center text-[var(--text-color)]">OLLAMA LOCAL</div>
+                <div class="text-amber-600">IF OFFLINE</div>
+                <div class="p-4 border-technical bg-amber-50 w-32 text-center">OLLAMA LOCAL</div>
               </div>
             </div>
           </div>
@@ -73,126 +66,76 @@ import Navbar from '../components/Navbar.astro';
     <section id="magic-pipeline" class="mb-24 animate-fade-in" style="animation-delay: 0.3s;">
       <div class="flex items-center gap-4 mb-8">
         <h2 class="text-2xl font-black uppercase tracking-tight">02. Magic Pipeline Sequence</h2>
-        <div class="h-px flex-1 bg-[var(--card-border)]"></div>
+        <div class="h-px flex-1 bg-slate-200"></div>
       </div>
 
       <div class="space-y-4">
-        <div class="medical-card p-6 flex gap-6 items-start group hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
-          <span class="text-blue-600 dark:text-blue-400 font-mono font-bold">01</span>
-          <div>
-            <h3 class="font-mono font-bold uppercase mb-2 text-[var(--text-color)]">IA_FALLBACK</h3>
-            <p class="terminal-text text-[var(--label-color)]" data-es="Detección automática de conectividad y selección de motor de inferencia." data-en="Automatic connectivity detection and inference engine selection.">Detección automática de conectividad y selección de motor de inferencia.</p>
+        {[
+          { step: '01', title: 'IA_FALLBACK', desc: 'Detección automática de conectividad y selección de motor de inferencia.' },
+          { step: '02', title: 'TTS_ELEVEN_LABS', desc: 'Generación de síntesis de voz natural para el resumen diagnóstico.' },
+          { step: '03', title: 'SOLANA_ANCHOR', desc: 'Generación de hash criptográfico e inmutabilidad en la Devnet de Solana.' },
+          { step: '04', title: 'SUPABASE_SYNC', desc: 'Sincronización final de registros médicos en la base de datos distribuida.' }
+        ].map(item => (
+          <div class="medical-card p-6 flex gap-6 items-start group hover:border-blue-400 transition-colors">
+            <span class="text-blue-600 font-mono font-bold">{item.step}</span>
+            <div>
+              <h3 class="font-mono font-bold text-slate-800 uppercase mb-2">{item.title}</h3>
+              <p class="terminal-text text-slate-500">{item.desc}</p>
+            </div>
           </div>
-        </div>
-        <div class="medical-card p-6 flex gap-6 items-start group hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
-          <span class="text-blue-600 dark:text-blue-400 font-mono font-bold">02</span>
-          <div>
-            <h3 class="font-mono font-bold uppercase mb-2 text-[var(--text-color)]">TTS_ELEVEN_LABS</h3>
-            <p class="terminal-text text-[var(--label-color)]" data-es="Generación de síntesis de voz natural para el resumen diagnóstico." data-en="Generation of natural voice synthesis for the diagnostic summary.">Generación de síntesis de voz natural para el resumen diagnóstico.</p>
-          </div>
-        </div>
-        <div class="medical-card p-6 flex gap-6 items-start group hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
-          <span class="text-blue-600 dark:text-blue-400 font-mono font-bold">03</span>
-          <div>
-            <h3 class="font-mono font-bold uppercase mb-2 text-[var(--text-color)]">SOLANA_ANCHOR</h3>
-            <p class="terminal-text text-[var(--label-color)]" data-es="Generación de hash criptográfico e inmutabilidad en la Devnet de Solana." data-en="Cryptographic hash generation and immutability on Solana Devnet.">Generación de hash criptográfico e inmutabilidad en la Devnet de Solana.</p>
-          </div>
-        </div>
-        <div class="medical-card p-6 flex gap-6 items-start group hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
-          <span class="text-blue-600 dark:text-blue-400 font-mono font-bold">04</span>
-          <div>
-            <h3 class="font-mono font-bold uppercase mb-2 text-[var(--text-color)]">SUPABASE_SYNC</h3>
-            <p class="terminal-text text-[var(--label-color)]" data-es="Sincronización final de registros médicos en la base de datos distribuida." data-en="Final synchronization of medical records in the distributed database.">Sincronización final de registros médicos en la base de datos distribuida.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section: Infraestructura y Datos -->
-    <section id="infraestructura" class="mb-24 animate-fade-in" style="animation-delay: 0.35s;">
-      <div class="flex items-center gap-4 mb-8">
-        <h2 class="text-2xl font-black uppercase tracking-tight" data-es="03. Infraestructura de Datos" data-en="03. Data Infrastructure">03. Infraestructura de Datos</h2>
-        <div class="h-px flex-1 bg-[var(--card-border)]"></div>
-      </div>
-      
-      <div class="grid md:grid-cols-2 gap-8">
-        <div class="medical-card p-8">
-          <h3 class="medical-label mb-6">SUPABASE_SCHEMA</h3>
-          <p class="terminal-text mb-4 text-[var(--label-color)]" data-es="La persistencia se maneja en PostgreSQL mediante Supabase." data-en="Persistence is handled in PostgreSQL via Supabase.">La persistencia se maneja en PostgreSQL mediante Supabase.</p>
-          <pre class="bg-slate-900 text-green-400 p-4 rounded text-[10px] font-mono overflow-x-auto">
-CREATE TABLE patients (
-  id SERIAL PRIMARY KEY,
-  first_name TEXT,
-  last_name TEXT,
-  birth_date DATE
-);
-
-CREATE TABLE medical_records (
-  id SERIAL PRIMARY KEY,
-  patient_id INT REFERENCES patients(id),
-  notes TEXT,
-  medical_hash TEXT,
-  transaction_signature TEXT
-);</pre>
-        </div>
-
-        <div class="medical-card p-8">
-          <h3 class="medical-label mb-6">ELEVENLABS_INTEGRATION</h3>
-          <p class="terminal-text mb-4 text-[var(--label-color)]" data-es="Las notas generadas por IA se sintetizan en voz natural para accesibilidad." data-en="AI-generated notes are synthesized into natural voice for accessibility.">Las notas generadas por IA se sintetizan en voz natural para accesibilidad.</p>
-          <div class="border border-[var(--card-border)] p-4 bg-slate-50 dark:bg-slate-900">
-            <ul class="space-y-2 font-mono text-[10px] text-[var(--text-color)]">
-              <li>> MODEL: eleven_multilingual_v2</li>
-              <li>> VOICE_ID: 9BWtsMINqrJLrRacOk9x</li>
-              <li>> STREAMING: Enabled (WebSockets)</li>
-              <li>> FALLBACK: Native Web Speech API</li>
-            </ul>
-          </div>
-        </div>
+        ))}
       </div>
     </section>
 
     <!-- Section: Identidad Visual -->
     <section id="identidad-visual" class="mb-24 animate-fade-in" style="animation-delay: 0.4s;">
       <div class="flex items-center gap-4 mb-8">
-        <h2 class="text-2xl font-black uppercase tracking-tight" data-es="04. Identidad Visual" data-en="04. Visual Identity">04. Identidad Visual</h2>
-        <div class="h-px flex-1 bg-[var(--card-border)]"></div>
+        <h2 class="text-2xl font-black uppercase tracking-tight">03. Identidad Visual</h2>
+        <div class="h-px flex-1 bg-slate-200"></div>
       </div>
 
       <div class="grid md:grid-cols-2 gap-8">
-        <div class="medical-card p-8">
-          <h3 class="medical-label mb-6" data-es="PALETA_DE_COLORES" data-en="COLOR_PALETTE">PALETA_DE_COLORES</h3>
+        <div class="medical-card p-8 bg-white">
+          <h3 class="medical-label mb-6">PALETA_DE_COLORES</h3>
           <div class="space-y-4">
             <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-[#2563EB] border border-[var(--card-border)]"></div>
+              <div class="w-12 h-12 bg-[#0052FF] border-technical"></div>
               <div>
-                <p class="font-mono text-xs font-bold text-[var(--text-color)]">#2563EB</p>
-                <p class="medical-label">PRIMARY_BLUE</p>
+                <p class="font-mono text-xs font-bold">#0052FF</p>
+                <p class="medical-label">PRIMARY_ELECTRIC_BLUE</p>
               </div>
             </div>
             <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-white dark:bg-[#1E293B] border border-[var(--card-border)] transition-colors"></div>
+              <div class="w-12 h-12 bg-white border-technical"></div>
               <div>
-                <p class="font-mono text-xs font-bold text-[var(--text-color)]">DYNAMIC_SURFACE</p>
-                <p class="medical-label">CLINIC_WHITE / SLATE_800</p>
+                <p class="font-mono text-xs font-bold">#FFFFFF</p>
+                <p class="medical-label">SURFACE_CLINIC_WHITE</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-[#1E293B] border-technical"></div>
+              <div>
+                <p class="font-mono text-xs font-bold">#1E293B</p>
+                <p class="medical-label">DEEP_SLATE_TEXT</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="medical-card p-8">
-          <h3 class="medical-label mb-6" data-es="PRINCIPIOS_DE_DISEÑO" data-en="DESIGN_PRINCIPLES">PRINCIPIOS_DE_DISEÑO</h3>
-          <ul class="space-y-4 terminal-text text-[var(--text-color)]">
+        <div class="medical-card p-8 bg-white">
+          <h3 class="medical-label mb-6">PRINCIPIOS_DE_DISEÑO</h3>
+          <ul class="space-y-4 terminal-text">
             <li class="flex gap-2">
-              <span class="text-blue-600 dark:text-blue-400">>></span>
-              <span data-es="Bordes técnicos de 1px (Estética Retro-Tech)." data-en="1px technical borders (Retro-Tech Aesthetic).">Bordes técnicos de 1px (Estética Retro-Tech).</span>
+              <span class="text-blue-600">>></span>
+              <span>Bordes técnicos de 1px en lugar de sombras (Estética IBM/Braun).</span>
             </li>
             <li class="flex gap-2">
-              <span class="text-blue-600 dark:text-blue-400">>></span>
-              <span data-es="Uso extensivo de tipografía JetBrains Mono y Orbitron." data-en="Extensive use of JetBrains Mono and Orbitron typography.">Uso extensivo de tipografía JetBrains Mono y Orbitron.</span>
+              <span class="text-blue-600">>></span>
+              <span>Uso extensivo de tipografía JetBrains Mono para datos.</span>
             </li>
             <li class="flex gap-2">
-              <span class="text-blue-600 dark:text-blue-400">>></span>
-              <span data-es="Animaciones de 'Scanner' y LEDs para feedback táctico." data-en="'Scanner' animations and LEDs for tactical feedback.">Animaciones de "Scanner" y LEDs para feedback táctico.</span>
+              <span class="text-blue-600">>></span>
+              <span>Animaciones de "Scanner" y LEDs de estado para feedback táctico.</span>
             </li>
           </ul>
         </div>
@@ -200,14 +143,14 @@ CREATE TABLE medical_records (
     </section>
 
     <!-- Footer Documentation -->
-    <div class="mt-24 pt-12 border-t border-[var(--card-border)] text-center transition-colors">
-      <p class="medical-label text-slate-400 dark:text-slate-500">END_OF_DOCUMENT — OPEN_S_PROJECT_V2.5</p>
+    <div class="mt-24 pt-12 border-t border-technical text-center">
+      <p class="medical-label text-slate-400">END_OF_DOCUMENT — OPEN_S_PROJECT_V2.5</p>
     </div>
   </main>
 </BaseLayout>
 
 <style>
   section {
-    scroll-margin-top: 5rem;
+    scroll-margin-top: 2rem;
   }
 </style>
