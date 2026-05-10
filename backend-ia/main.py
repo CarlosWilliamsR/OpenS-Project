@@ -17,7 +17,25 @@ from solders.keypair import Keypair
 from solders.pubkey import Pubkey
 from anchorpy import Program, Provider, Wallet, Idl, Context
 from solana.rpc.core import RPCException
+from fastapi.middleware.cors import CORSMiddleware
 
+
+app = FastAPI()
+
+
+origins = [
+    "http://localhost:3000",       
+    "https://open-s-project-tn7w.vercel.app/", 
+]
+
+# 2. Agrega el middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          
+    allow_credentials=True,
+    allow_methods=["*"],             
+    allow_headers=["*"],          
+)
 load_dotenv()
 
 app = FastAPI(title="Medical AI Assistant API")
