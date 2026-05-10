@@ -33,9 +33,13 @@ app.add_middleware(
 
 # Initialize Gemini client
 # using Gemini as the exclusive cloud model
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_API_KEY = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
+    print(f"[OpenS] Gemini configured with model: {GEMINI_MODEL}")
+else:
+    print("[OpenS] WARNING: No Gemini API key found. Cloud AI disabled.")
 
 # Supabase configuration
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
@@ -89,6 +93,24 @@ async def fetch_patient_history(patient_id: str) -> List[Dict[str, Any]]:
         print(f"Error fetching patient history: {e}")
         return []
 
+@app.get("/api/v1/patients")
+async def get_all_patients():
+    """Fetch all patients from the Supabase 'patients' table."""
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return []
+    try:
+        supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        response = supabase.table("patients").select("*").execute()
+        patients = list(response.data) if response.data else []
+        return patients
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/patients/{patient_id}/records")
+async def get_patient_records(patient_id: str):
+    """Fetch all medical records for a specific patient."""
+    records = await fetch_patient_history(patient_id)
+    return records
 
 
 async def register_patient_hash(patient_id: str, medical_hash: str) -> str:
@@ -100,10 +122,17 @@ async def register_patient_hash(patient_id: str, medical_hash: str) -> str:
     idl_path = Path(__file__).parent / "app" / "utils" / "opens_anchor.json"
     keypair_path = Path("~/.config/solana/id.json").expanduser()
 
-    # Load local Keypair
+    # Load Keypair from Environment Variable or Local File
     try:
-        with keypair_path.open("r", encoding="utf-8") as f:
-            payload = json.load(f)
+        solana_key_env = os.environ.get("SOLANA_KEYPAIR_JSON")
+        if solana_key_env:
+            # Parse from environment variable (useful for Render/Cloud)
+            payload = json.loads(solana_key_env)
+        else:
+            # Parse from local file
+            with keypair_path.open("r", encoding="utf-8") as f:
+                payload = json.load(f)
+                
         secret = payload["secret_key"] if isinstance(payload, dict) and "secret_key" in payload else payload
         keypair = Keypair.from_bytes(bytes(secret))
         wallet = Wallet(keypair)
@@ -224,16 +253,20 @@ async def seal_record(request: RecordSealRequest):
             supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
             record_payload = {
                 "patient_id": request.patient_id,
-                "patient_id_hash": patient_id_bytes.hex(),
                 "medical_hash": medical_hash,
-                "on_chain_pda": str(record_pda),
+                "diagnosis_hash": medical_hash,
+                "solana_tx_id": tx_signature,
                 "transaction_signature": tx_signature,
-                "notes": request.notes or "",
-                "date": request.date or "",
+                "description": request.notes or "Consulta finalizada por asistente IA",
+                "diagnosis": request.diagnosis_text or "Sin diagnóstico",
+                "date": request.date or time.strftime("%Y-%m-%d"),
             }
-            res = supabase.table("medical_records").insert(record_payload).execute()
-            if res.status_code not in (200, 201):
-                print("Warning: Failed to save medical record to Supabase.", res)
+            try:
+                res = supabase.table("medical_records").insert(record_payload).execute()
+                print(f"[OpenS] Record sealed successfully in Supabase: {res.data}")
+            except Exception as supabase_err:
+                print(f"Supabase insert failed: {supabase_err}")
+                raise HTTPException(status_code=500, detail=f"Error sealing record in DB: {supabase_err}")
 
         # 4. Detailed Response
         solscan_url = f"https://solscan.io/tx/{tx_signature}?cluster=devnet"
@@ -254,35 +287,47 @@ async def seal_record(request: RecordSealRequest):
 @app.post("/api/v1/assistant/tts")
 async def synthesize_voice(request: TTSRequest):
     """Generate audio from text using ElevenLabs API or a fallback."""
+    from fastapi.responses import Response
     elevenlabs_key = os.environ.get("ELEVENLABS_API_KEY")
     voice_id = os.environ.get("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM") # default voice
     
-    if not elevenlabs_key:
-        raise HTTPException(status_code=500, detail="ElevenLabs API key not configured")
-        
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-    headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": elevenlabs_key
-    }
-    data = {
-        "text": request.text,
-        "model_id": "eleven_monolingual_v1",
-        "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.5
+    if elevenlabs_key:
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+        headers = {
+            "Accept": "audio/mpeg",
+            "Content-Type": "application/json",
+            "xi-api-key": elevenlabs_key
         }
-    }
-    
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(url, json=data, headers=headers, timeout=30.0)
-            response.raise_for_status()
-            from fastapi.responses import Response
-            return Response(content=response.content, media_type="audio/mpeg")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"TTS error: {str(e)}")
+        data = {
+            "text": request.text,
+            "model_id": "eleven_monolingual_v1",
+            "voice_settings": {
+                "stability": 0.5,
+                "similarity_boost": 0.5
+            }
+        }
+        
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(url, json=data, headers=headers, timeout=10.0)
+                response.raise_for_status()
+                return Response(content=response.content, media_type="audio/mpeg")
+            except Exception as e:
+                print(f"[OpenS] ElevenLabs TTS failed ({e}). Falling back to gTTS.")
+    else:
+        print("[OpenS] No ElevenLabs API key found. Using gTTS fallback.")
+        
+    # Fallback to gTTS (free Google TTS)
+    try:
+        from gtts import gTTS
+        import io
+        tts = gTTS(text=request.text, lang='es')
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        fp.seek(0)
+        return Response(content=fp.read(), media_type="audio/mpeg")
+    except Exception as fallback_e:
+        raise HTTPException(status_code=500, detail=f"TTS error and fallback failed: {fallback_e}")
 
 
 # Virtual Assistant endpoint
@@ -301,7 +346,10 @@ async def ask_assistant(request: PatientQueryRequest):
         if patient_history:
             context = "\n\nPatient Medical History:\n"
             for record in patient_history:
-                context += f"- Date: {record.get('date', 'N/A')}, Notes: {record.get('notes', 'N/A')}\n"
+                desc = record.get('description', '')
+                diag = record.get('diagnosis', '')
+                date = record.get('date', 'N/A')
+                context += f"- Date: {date}, Description: {desc}, Diagnosis: {diag}\n"
         
         engine_used = "gemini" # Used as a proxy identifier for cloud in the UI
         assistant_response = ""
@@ -318,7 +366,7 @@ async def ask_assistant(request: PatientQueryRequest):
                 user_message = f"{request.prompt_text}{context}"
                 
                 model = genai.GenerativeModel(
-                    model_name="gemini-1.5-pro",
+                    model_name=GEMINI_MODEL,
                     system_instruction=system_prompt
                 )
                 response = model.generate_content(user_message)
@@ -332,7 +380,7 @@ async def ask_assistant(request: PatientQueryRequest):
         if cloud_failed or not assistant_response:
             # Fallback to Ollama local instance
             engine_used = "qwen" # Local indicator
-            ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
+            ollama_host = os.environ.get("OLLAMA_BASE_URL", os.environ.get("OLLAMA_HOST", "http://localhost:11434"))
             
             system_prompt = (
                 "You are a helpful medical AI assistant. Provide informative and supportive responses "
@@ -343,7 +391,7 @@ async def ask_assistant(request: PatientQueryRequest):
             async with httpx.AsyncClient() as client:
                 try:
                     payload = {
-                        "model": "qwen2.5:0.5b", # Adjust to your local model
+                        "model": os.environ.get("OLLAMA_MODELS", "qwen2.5:7b").split(",")[0],  # First model from env
                         "prompt": prompt,
                         "stream": False,
                         "options": {
