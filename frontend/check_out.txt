@@ -1,0 +1,47 @@
+18:17:48 [types] Generated 66ms
+18:17:48 [check] Getting diagnostics for Astro files in /home/david/Descargas/OpenS Demo/OpenS/frontend...
+[96msrc/pages/asistente.astro[0m:[93m462[0m:[93m66[0m - [91merror[0m[90m ts(7006): [0mParameter 's' implicitly has an 'any' type.
+
+[7m462[0m     const solRes = await anchorOnChain(hash, currentPatient.id, (s) => label.textContent = s);
+[7m   [0m [91m                                                                 ~[0m
+
+[96msrc/pages/pacientes.astro[0m:[93m72[0m:[93m12[0m - [93mwarning[0m[90m ts(6133): [0m'esc' is declared but its value is never read.
+
+[7m72[0m   function esc(value: any) {
+[7m  [0m [93m           ~~~[0m
+
+[96msrc/services/patientService.js[0m:[93m48[0m:[93m58[0m - [93mwarning[0m[90m ts(6133): [0m'txSignature' is declared but its value is never read.
+
+[7m48[0m   async finalizeConsultation(patientId, diagnosis, hash, txSignature, reason) {
+[7m  [0m [93m                                                         ~~~~~~~~~~~[0m
+[96msrc/services/patientService.js[0m:[93m48[0m:[93m52[0m - [93mwarning[0m[90m ts(6133): [0m'hash' is declared but its value is never read.
+
+[7m48[0m   async finalizeConsultation(patientId, diagnosis, hash, txSignature, reason) {
+[7m  [0m [93m                                                   ~~~~[0m
+[96msrc/services/patientService.js[0m:[93m22[0m:[93m46[0m - [93mwarning[0m[90m ts(6133): [0m'model_preference' is declared but its value is never read.
+
+[7m22[0m   async askAssistant(patientId, prompt_text, model_preference = 'gemini') {
+[7m  [0m [93m                                             ~~~~~~~~~~~~~~~~[0m
+[96msrc/services/patientService.js[0m:[93m17[0m:[93m27[0m - [93mwarning[0m[90m ts(6133): [0m'patientId' is declared but its value is never read.
+
+[7m17[0m   async getPatientRecords(patientId) {
+[7m  [0m [93m                          ~~~~~~~~~[0m
+[96msrc/services/patientService.js[0m:[93m4[0m:[93m31[0m - [93mwarning[0m[90m ts(6133): [0m'options' is declared but its value is never read.
+
+[7m4[0m   async searchPatients(query, options = {}) {
+[7m [0m [93m                              ~~~~~~~[0m
+
+[96msrc/services/solanaService.js[0m:[93m10[0m:[93m43[0m - [93mwarning[0m[90m ts(6133): [0m'patientId' is declared but its value is never read.
+
+[7m10[0m export async function anchorOnChain(hash, patientId, setStatusLabel) {
+[7m  [0m [93m                                          ~~~~~~~~~[0m
+[96msrc/services/solanaService.js[0m:[93m10[0m:[93m37[0m - [93mwarning[0m[90m ts(6133): [0m'hash' is declared but its value is never read.
+
+[7m10[0m export async function anchorOnChain(hash, patientId, setStatusLabel) {
+[7m  [0m [93m                                    ~~~~[0m
+
+Result (22 files): 
+- 1 error
+- 0 warnings
+- 8 hints
+

@@ -1,11 +1,8 @@
-[package]
-name = "opens_anchor"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = [
+    "programs/*"
+]
+resolver = "2"
 
-[lib]
-name = "opens_anchor"
-crate-type = ["cdylib"]
-
-[dependencies]
-anchor-lang = "0.34.0"
+[profile.release]
+overflow-checks = true

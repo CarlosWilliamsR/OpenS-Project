@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
 from anchorpy import Idl, Program, Provider, Wallet
-from solana.keypair import Keypair
-from solana.publickey import PublicKey
+from solders.keypair import Keypair
+from solders.pubkey import Pubkey as PublicKey
 from solana.rpc.api import Client
 from solana.system_program import SYS_PROGRAM_ID
 
@@ -64,7 +64,7 @@ def load_keypair(path: str) -> Keypair:
         secret = payload
 
     secret_bytes = bytes(secret)
-    return Keypair.from_secret_key(secret_bytes)
+    return Keypair.from_bytes(secret_bytes)
 
 
 def normalize_patient_id(patient_id: Union[str, int]) -> bytes:
