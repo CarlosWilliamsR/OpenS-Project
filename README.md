@@ -115,17 +115,43 @@ Para garantizar la disponibilidad en entornos con conectividad inestable (común
 | `GET` | `/health` | Estado detallado (IA y DB configuradas).
 
  |
+| `GET` | `/api/v1/patients` | Lista de pacientes desde Supabase.
+ 
+ |
 | `POST` | `/api/v1/assistant/ask` | Consulta principal al asistente médico.
 
+ |
+| `POST` | `/api/v1/assistant/seal_record` | Sella diagnóstico en Solana y persiste metadata.
+ 
+ |
+| `POST` | `/api/v1/assistant/tts` | Generación de audio (alias de voz).
+ 
  |
 | `POST` | `/api/v1/voice/generate` | Generación de audio con ElevenLabs.
 
  |
-| `GET` | `/api/v1/patients/:id/records` | Recuperación de historial clínico de Supabase.
+| `GET` | `/api/v1/patients/{id}/records` | Recuperación de historial clínico de Supabase.
 
  |
 
 ---
+
+## 🆕 Mejoras recientes (mayo 2026)
+
+* 
+**Integración real Frontend ↔ Backend:** `patientService.js` ahora consume pacientes e historiales desde FastAPI/Supabase (sin datos mock).
+
+
+* 
+**Trazabilidad del motor de IA:** `POST /api/v1/assistant/ask` devuelve `engine_used` para identificar si la respuesta vino de Gemini, Ollama o fallback.
+
+
+* 
+**Mayor compatibilidad de respuestas:** la UI de pacientes soporta payloads en formato lista directa y en formato `{ patients }` / `{ records }`.
+
+
+* 
+**Persistencia clínica más completa:** al finalizar consulta se envía también metadata útil (`hash` y firma frontend) dentro de `notes`.
 
 ## 🔒 Seguridad y Ética
 
