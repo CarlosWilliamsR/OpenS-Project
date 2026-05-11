@@ -1,0 +1,24 @@
+---
+---
+<div class="medical-card p-4 relative" id="search-container">
+  <div class="mb-4">
+    <input type="text" id="patient-search" placeholder="Buscar paciente (ID, Nombre)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" autocomplete="off" />
+    <p id="patient-search-hint" class="text-[10px] font-mono text-slate-400 mt-1.5 px-1"></p>
+    <div id="search-results" class="hidden absolute top-[70px] left-4 right-4 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto overflow-x-hidden"></div>
+  </div>
+  <div class="flex justify-between items-center mb-3">
+    <h3 class="medical-label">Directorio Local</h3>
+    <button class="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    </button>
+  </div>
+  <div id="patients-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1"></div>
+</div>
+
+<div class="medical-card p-4 mt-4">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="medical-label">Historial Clínico</h3>
+    <button id="download-history-pdf-btn" disabled class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-blue-50 hover:text-blue-600 disabled:opacity-50 transition-colors">PDF</button>
+  </div>
+  <div id="records-list" class="space-y-2 max-h-[400px] overflow-y-auto"></div>
+</div>

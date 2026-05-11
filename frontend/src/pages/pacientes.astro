@@ -56,7 +56,7 @@ import Navbar from '../components/Navbar.astro';
 
   async function apiFetch(path: string) {
     try { const r = await fetch(path); if (r.ok) return await r.json(); } catch {}
-    try { const r = await fetch(`http://localhost:8001${path}`); if (r.ok) return await r.json(); } catch {}
+    try { const r = await fetch(`http://localhost:8000${path}`); if (r.ok) return await r.json(); } catch {}
     return null;
   }
 

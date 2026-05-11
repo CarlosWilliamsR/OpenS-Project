@@ -1,0 +1,19 @@
+anchor_lang::system_program::AdvanceNonceAccount<'info>
+anchor_lang::system_program::AuthorizeNonceAccount<'info>
+anchor_lang::system_program::CreateAccountWithSeed<'info>
+anchor_lang::system_program::CreateNonceAccount<'info>
+anchor_lang::system_program::CreateNonceAccountWithSeed<'info>
+anchor_lang::system_program::WithdrawNonceAccount<'info>
+anchor_lang::Accounts<'info, anchor_lang::system_program::AdvanceNonceAccountBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::AllocateBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::AllocateWithSeedBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::AssignBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::AssignWithSeedBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::AuthorizeNonceAccountBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::CreateAccountBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::CreateAccountWithSeedBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::CreateNonceAccountBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::CreateNonceAccountWithSeedBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::TransferBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::TransferWithSeedBumps>
+anchor_lang::Accounts<'info, anchor_lang::system_program::WithdrawNonceAccountBumps>

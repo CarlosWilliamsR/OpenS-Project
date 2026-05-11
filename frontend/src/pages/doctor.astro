@@ -37,7 +37,7 @@ import Navbar from '../components/Navbar.astro';
 
 <script>
   const API='/api/v1';
-  async function af(p:string){try{const r=await fetch(p);if(r.ok)return await r.json();}catch{}try{const r=await fetch(`http://localhost:8001${p}`);if(r.ok)return await r.json();}catch{}return null;}
+  async function af(p:string){try{const r=await fetch(p);if(r.ok)return await r.json();}catch{}try{const r=await fetch(`http://localhost:8000${p}`);if(r.ok)return await r.json();}catch{}return null;}
   (async()=>{
     const data=await af(`${API}/patients`);const ps=data?.patients||[];
     document.getElementById('stat-patients')!.textContent=String(ps.length);
