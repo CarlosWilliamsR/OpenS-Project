@@ -10,8 +10,12 @@ export default {
       colors: {
         technical: {
           50: '#f8fafc',
-          100: '#f1f5f9',
-          900: '#0f172a',
+          100: '#E2E8F0', // Gris clínico
+          900: '#1E293B', // Deep Slate
+        },
+        primary: {
+          DEFAULT: '#0052FF', // Azul Eléctrico
+          hover: '#003ecc'
         }
       }
     },

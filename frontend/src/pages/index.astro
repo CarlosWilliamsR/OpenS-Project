@@ -1,57 +1,54 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
 ---
 
-<BaseLayout title="OpenS — Resilient AI for Human Healthcare">
-  <div class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-slate-900 dot-grid">
+<BaseLayout title="OpenS — Resilient AI">
+  <Navbar />
+  <div class="relative min-h-[calc(100vh-64px)] flex flex-col items-center justify-center overflow-hidden">
     <!-- Scanner Line -->
-    <div class="absolute top-1/2 left-0 w-full h-[1px] bg-blue-600/30 z-0 animate-scanner"></div>
+    <div class="absolute top-1/2 left-0 w-full h-[1px] bg-primary/40 z-0 animate-[scanner_4s_ease-in-out_infinite] shadow-[0_0_10px_rgba(0,82,255,0.8)]"></div>
 
-    <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-slate-200 text-slate-500 font-mono text-[10px] uppercase tracking-[0.2em] mb-8 animate-fade-in">
-        <span class="w-1.5 h-1.5 bg-blue-600 animate-led"></span>
-        SYSTEM_READY: v2.5_RESILIENCE
-      </div>
-
-      <div class="medical-card p-12 mb-10 bg-white/80 backdrop-blur-md relative">
+    <div class="relative z-10 text-center px-4 w-full max-w-3xl mx-auto">
+      <div class="medical-card p-10 md:p-16 relative bg-white/95">
         <!-- Corner decorations -->
-        <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-slate-300"></div>
-        <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-slate-300"></div>
-        <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-slate-300"></div>
-        <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-slate-300"></div>
+        <div class="absolute top-0 left-0 w-4 h-4 border-t border-l border-primary"></div>
+        <div class="absolute top-0 right-0 w-4 h-4 border-t border-r border-primary"></div>
+        <div class="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-primary"></div>
+        <div class="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-primary"></div>
 
-        <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter animate-fade-in uppercase">
-          OpenS: <span class="text-blue-600">Resilient AI</span><br/>
-          Human Healthcare
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 border-technical font-mono text-[10px] uppercase tracking-[0.2em] mb-8">
+          <span class="w-1.5 h-1.5 bg-primary animate-pulse shadow-[0_0_5px_rgba(0,82,255,0.8)]"></span>
+          <span data-es="SISTEMA_LISTO" data-en="SYSTEM_READY">SISTEMA_LISTO</span>: v2.5_RESILIENCE
+        </div>
+
+        <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter uppercase text-slate-900">
+          OpenS: <span class="text-primary">AI</span><br/>
+          <span data-es="Salud Resiliente" data-en="Resilient Health">Salud Resiliente</span>
         </h1>
 
-        <p class="text-lg md:text-xl font-mono text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in uppercase" style="animation-delay: 0.1s;">
-          Democratizando el diagnóstico médico en entornos de baja conectividad con arquitectura híbrida, voz de ElevenLabs e inmutabilidad en Solana.
+        <p class="text-sm font-mono text-slate-500 max-w-xl mx-auto mb-10 leading-relaxed uppercase" data-es="Democratizando el diagnóstico médico con inferencia local Qwen, fallback en la nube y registro inmutable." data-en="Democratizing medical diagnosis with Qwen local inference, cloud fallback, and immutable ledger.">
+          Democratizando el diagnóstico médico con inferencia local Qwen, fallback en la nube y registro inmutable.
         </p>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in" style="animation-delay: 0.2s;">
-          <a href="/asistente" class="w-full sm:w-auto px-10 py-5 bg-blue-600 text-white font-bold uppercase tracking-widest transition-all glow-blue-hover">
-            Launch Medical Demo
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <a href="/asistente" class="w-full sm:w-auto px-10 py-4 bg-primary text-white font-bold font-mono text-sm uppercase tracking-widest transition-all glow-blue-hover border border-primary" data-es="Iniciar Demo Médica" data-en="Launch Medical Demo">
+            Iniciar Demo Médica
           </a>
-          <a href="/admin" class="w-full sm:w-auto px-10 py-5 bg-white text-slate-800 border-technical font-bold uppercase tracking-widest transition-all hover:bg-slate-50">
-            System Dashboard
+          <a href="/admin" class="w-full sm:w-auto px-10 py-4 bg-white text-slate-800 border-technical font-bold font-mono text-sm uppercase tracking-widest transition-colors hover:bg-slate-50" data-es="Panel de Sistema" data-en="System Dashboard">
+            Panel de Sistema
           </a>
         </div>
-      </div>
-
-      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-200 border-technical animate-fade-in" style="animation-delay: 0.4s;">
-        {[
-          { label: 'Local Inference', val: 'Qwen 2.5' },
-          { label: 'Cloud Fallback', val: 'Gemini 1.5' },
-          { label: 'Voice Sync', val: 'ElevenLabs' },
-          { label: 'Security', val: 'Solana' }
-        ].map(f => (
-          <div class="p-6 bg-white">
-            <p class="medical-label mb-2">{f.label}</p>
-            <p class="medical-value">{f.val}</p>
-          </div>
-        ))}
       </div>
     </div>
   </div>
 </BaseLayout>
+
+<style>
+  @keyframes scanner {
+    0% { transform: translateY(-300px); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(300px); opacity: 0; }
+  }
+</style>

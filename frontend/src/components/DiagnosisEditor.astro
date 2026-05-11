@@ -1,23 +1,23 @@
 ---
 ---
 <div class="medical-card p-4 hidden" id="diagnosis-container">
-  <h3 class="medical-label mb-3">Anotaciones Médicas</h3>
+  <h3 class="font-mono text-xs font-bold uppercase tracking-wider mb-4 border-b border-technical pb-2 text-slate-800" data-es="Anotaciones Médicas" data-en="Medical Notes">Anotaciones Médicas</h3>
   <div class="space-y-4">
     <div>
-      <label class="text-[11px] font-bold text-slate-500 uppercase">Motivo de Consulta</label>
-      <textarea id="reason-input" rows="2" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm focus:ring-blue-500 outline-none" placeholder="Ej: Dolor de cabeza persistente..."></textarea>
+      <label class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider" data-es="Motivo de Consulta" data-en="Reason for Visit">Motivo de Consulta</label>
+      <textarea id="reason-input" rows="2" class="w-full mt-1 bg-slate-50 border border-technical p-2 text-sm font-mono text-slate-900 focus:ring-1 focus:ring-primary outline-none" placeholder="Ej: Dolor de cabeza persistente..."></textarea>
     </div>
     <div>
-      <label class="text-[11px] font-bold text-slate-500 uppercase">Análisis IA Preliminar</label>
-      <textarea id="draft-output" rows="3" readonly class="w-full mt-1 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg p-2 text-xs font-mono resize-none"></textarea>
+      <label class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider" data-es="Análisis IA Preliminar" data-en="Preliminary AI Analysis">Análisis IA Preliminar</label>
+      <textarea id="draft-output" rows="3" readonly class="w-full mt-1 bg-slate-100 border border-technical text-slate-700 p-2 text-xs font-mono resize-none"></textarea>
     </div>
     <div>
-      <label class="text-[11px] font-bold text-slate-500 uppercase">Diagnóstico Final</label>
-      <textarea id="final-diagnosis-input" rows="3" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm focus:ring-emerald-500 outline-none border-l-4 border-l-emerald-500" placeholder="Diagnóstico conclusivo..."></textarea>
+      <label class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider" data-es="Diagnóstico Final" data-en="Final Diagnosis">Diagnóstico Final</label>
+      <textarea id="final-diagnosis-input" rows="3" class="w-full mt-1 bg-slate-50 border border-technical p-2 text-sm font-mono text-slate-900 focus:ring-1 focus:ring-primary outline-none border-l-2 border-l-primary" placeholder="Diagnóstico conclusivo..."></textarea>
     </div>
-    <div class="flex gap-2">
-      <button id="download-pdf-basic-btn" class="flex-1 py-2 bg-slate-100 text-slate-700 font-bold text-xs rounded-lg hover:bg-slate-200">PDF Simple</button>
-      <button id="download-pdf-btn" class="flex-1 py-2 bg-blue-100 text-blue-700 font-bold text-xs rounded-lg hover:bg-blue-200">PDF con IA</button>
+    <div class="flex gap-px bg-technical border border-technical">
+      <button id="download-pdf-basic-btn" class="flex-1 py-2.5 bg-white text-slate-900 font-mono font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-colors" data-es="PDF Simple" data-en="Simple PDF">PDF Simple</button>
+      <button id="download-pdf-btn" class="flex-1 py-2.5 bg-white text-primary font-mono font-bold text-[10px] uppercase tracking-wider hover:bg-blue-50 transition-colors" data-es="PDF con IA" data-en="PDF with AI">PDF con IA</button>
     </div>
   </div>
 </div>

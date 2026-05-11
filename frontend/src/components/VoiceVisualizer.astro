@@ -1,9 +1,108 @@
 ---
 ---
-<div class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hidden" id="voice-container">
-  <div class="flex justify-between items-center mb-2">
-    <span class="medical-label text-[10px]">ElevenLabs TTS</span>
-    <button id="audio-summary-btn" class="hidden text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold hover:bg-blue-200">Generar Resumen</button>
-  </div>
-  <audio id="voice-audio" controls class="w-full h-8 mt-2"></audio>
+<div class="mt-4 border-technical p-3 bg-white relative overflow-hidden" id="voice-visualizer-container">
+  <div class="absolute top-0 left-0 w-full h-full dot-grid opacity-50 z-0"></div>
+  <p class="text-[10px] font-mono font-bold text-slate-500 uppercase mb-2 relative z-10 flex items-center justify-between">
+    <span data-es="SEÑAL_AUDIO" data-en="AUDIO_SIGNAL">SEÑAL_AUDIO</span>
+    <span class="text-primary animate-pulse" id="audio-status" data-es="ESPERA" data-en="STANDBY">ESPERA</span>
+  </p>
+  <canvas id="voice-canvas" class="w-full h-16 relative z-10"></canvas>
+  <audio id="voice-audio" class="hidden"></audio>
 </div>
+
+<script>
+  const canvas = document.getElementById('voice-canvas');
+  const ctx = canvas.getContext('2d');
+  const audio = document.getElementById('voice-audio');
+  const statusEl = document.getElementById('audio-status');
+  
+  function resizeCanvas() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  let audioCtx, analyser, source, dataArray;
+  let isPlaying = false;
+
+  audio.addEventListener('play', () => {
+    if(!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      source = audioCtx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    isPlaying = true;
+    if (statusEl) {
+      statusEl.textContent = localStorage.getItem('opens_lang') === 'en' ? 'ACTIVE' : 'ACTIVA';
+      statusEl.className = 'text-emerald-500 animate-pulse';
+    }
+    drawEKG();
+  });
+
+  audio.addEventListener('pause', () => {
+    isPlaying = false;
+    if (statusEl) {
+      statusEl.textContent = localStorage.getItem('opens_lang') === 'en' ? 'STANDBY' : 'ESPERA';
+      statusEl.className = 'text-primary animate-pulse';
+    }
+    drawFlatline();
+  });
+  
+  audio.addEventListener('ended', () => {
+    isPlaying = false;
+    if (statusEl) {
+      statusEl.textContent = localStorage.getItem('opens_lang') === 'en' ? 'STANDBY' : 'ESPERA';
+      statusEl.className = 'text-primary animate-pulse';
+    }
+    drawFlatline();
+  });
+
+  function drawEKG() {
+    if(!isPlaying) return;
+    requestAnimationFrame(drawEKG);
+    analyser.getByteTimeDomainData(dataArray);
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#0052FF'; // Neon blue on white
+    ctx.shadowBlur = 4;
+    ctx.shadowColor = '#0052FF';
+
+    ctx.beginPath();
+    let sliceWidth = canvas.width / dataArray.length;
+    let x = 0;
+
+    for(let i = 0; i < dataArray.length; i++) {
+      let v = dataArray[i] / 128.0;
+      let y = v * canvas.height/2;
+
+      if(i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+
+      x += sliceWidth;
+    }
+    ctx.stroke();
+  }
+
+  function drawFlatline() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#0052FF';
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height/2);
+    ctx.lineTo(canvas.width, canvas.height/2);
+    ctx.stroke();
+  }
+
+  drawFlatline();
+</script>

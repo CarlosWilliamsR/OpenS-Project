@@ -4,32 +4,32 @@ import Navbar from '../components/Navbar.astro';
 ---
 <BaseLayout title="System Health Hub - OpenS">
 <Navbar />
-<main class="max-w-6xl mx-auto px-4 py-16 dot-grid">
+<main class="max-w-6xl mx-auto px-4 py-16">
   <div class="mb-16">
-    <div class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-slate-200 text-slate-500 font-mono text-[10px] uppercase tracking-[0.2em] mb-4">
-      <span class="w-1.5 h-1.5 bg-blue-600 animate-led"></span>
-      MISSION_CONTROL_ACTIVE
+    <div class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-technical text-slate-500 font-mono text-[10px] uppercase tracking-[0.2em] mb-4">
+      <span class="w-1.5 h-1.5 bg-primary animate-pulse shadow-[0_0_5px_rgba(0,82,255,0.8)]"></span>
+      <span data-es="CONTROL_MISION_ACTIVO" data-en="MISSION_CONTROL_ACTIVE">CONTROL_MISION_ACTIVO</span>
     </div>
-    <h1 class="text-4xl font-black text-slate-900 tracking-tighter mb-2 uppercase">System Health Hub</h1>
-    <p class="text-sm font-mono text-slate-500 uppercase">Monitoriza la infraestructura resiliente de OpenS en tiempo real.</p>
+    <h1 class="text-4xl font-black text-slate-900 tracking-tighter mb-2 uppercase" data-es="Panel de Sistema" data-en="System Health Hub">Panel de Sistema</h1>
+    <p class="text-sm font-mono text-slate-500 uppercase" data-es="Monitoriza la infraestructura resiliente de OpenS en tiempo real." data-en="Monitor the resilient infrastructure of OpenS in real-time.">Monitoriza la infraestructura resiliente de OpenS en tiempo real.</p>
   </div>
 
-  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 border-technical mb-12">
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-technical border-technical mb-12">
     <!-- Service Cards -->
     {['Gemini', 'ElevenLabs', 'Solana', 'Supabase'].map((service) => (
       <div class="p-8 bg-white group relative overflow-hidden">
         <div class="flex justify-between items-start mb-6">
-          <div class="w-12 h-12 bg-slate-50 flex items-center justify-center border-technical group-hover:border-blue-200 group-hover:bg-blue-50 transition-colors">
-            <span class="text-lg font-mono font-bold text-slate-400 group-hover:text-blue-600">{service[0]}</span>
+          <div class="w-12 h-12 bg-slate-50 flex items-center justify-center border border-technical group-hover:border-primary group-hover:bg-blue-50 transition-colors">
+            <span class="text-lg font-mono font-bold text-slate-400 group-hover:text-primary">{service[0]}</span>
           </div>
-          <div id={`status-dot-${service.toLowerCase()}`} class="w-2 h-2 bg-slate-300 animate-led"></div>
+          <span id={`status-text-${service.toLowerCase()}`} class="font-mono text-[10px] font-bold text-slate-400">[STATUS: CHECKING]</span>
         </div>
         <h3 class="font-mono font-bold text-slate-800 mb-1 uppercase tracking-tight">{service}</h3>
         <p class="medical-label mb-6">SERVICE_API_ENDPOINT</p>
         
-        <div class="flex items-center justify-between pt-6 border-t border-slate-100">
-          <span id={`latency-${service.toLowerCase()}`} class="medical-value">-- MS</span>
-          <button data-service={service.toLowerCase()} class="test-latency-btn medical-label text-blue-600 hover:underline">TEST_LATENCY</button>
+        <div class="flex items-center justify-between pt-6 border-t border-technical">
+          <span id={`latency-${service.toLowerCase()}`} class="font-mono text-xs font-bold text-slate-900">-- MS</span>
+          <button data-service={service.toLowerCase()} class="test-latency-btn font-mono text-[10px] font-bold text-primary hover:underline uppercase">TEST_LATENCY</button>
         </div>
       </div>
     ))}
@@ -38,67 +38,67 @@ import Navbar from '../components/Navbar.astro';
   <div class="grid lg:grid-cols-3 gap-8">
     <!-- Demo Mode & Engine Selection -->
     <div class="lg:col-span-2 space-y-8">
-      <div class="medical-card p-10 bg-slate-900 text-white relative overflow-hidden">
+      <div class="medical-card p-10 bg-slate-900 text-white relative overflow-hidden border-slate-700">
         <div class="absolute top-0 right-0 p-10">
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" id="demo-mode-toggle" class="sr-only peer">
-            <div class="w-14 h-7 bg-slate-700 peer-focus:outline-none rounded-none peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-none after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
+            <div class="w-14 h-7 bg-slate-800 peer-focus:outline-none border border-slate-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
           </label>
         </div>
         
         <h2 class="text-2xl font-black mb-2 uppercase tracking-tight">Force Offline Mode</h2>
         <p class="text-slate-400 font-mono text-xs uppercase tracking-wider mb-8">Validar fallback a nodos locales (Resilience Test).</p>
         
-        <div class="grid sm:grid-cols-2 gap-px bg-white/10">
-          <div class="p-6 bg-white/5 border border-white/10">
-            <h4 class="medical-label text-slate-500 mb-3">CLOUD_STATUS</h4>
+        <div class="grid sm:grid-cols-2 gap-px bg-slate-700 border border-slate-700">
+          <div class="p-6 bg-slate-800">
+            <h4 class="font-mono text-[10px] font-bold text-slate-500 mb-3 uppercase">CLOUD_STATUS</h4>
             <div id="cloud-status-indicator" class="flex items-center gap-2">
-              <span class="w-1.5 h-1.5 bg-emerald-500 animate-led"></span>
-              <span class="font-mono text-xs uppercase">Gemini 1.5 Online</span>
+              <span class="w-2 h-2 bg-emerald-500 animate-pulse shadow-[0_0_5px_rgba(16,185,129,0.8)]"></span>
+              <span class="font-mono text-xs uppercase text-emerald-400">[STATUS: OK] Gemini Online</span>
             </div>
           </div>
-          <div class="p-6 bg-white/5 border border-white/10">
-            <h4 class="medical-label text-slate-500 mb-3">LOCAL_NODE_STATUS</h4>
+          <div class="p-6 bg-slate-800">
+            <h4 class="font-mono text-[10px] font-bold text-slate-500 mb-3 uppercase">LOCAL_NODE_STATUS</h4>
             <div class="flex items-center gap-2">
-              <span class="w-1.5 h-1.5 bg-blue-500"></span>
-              <span class="font-mono text-xs uppercase">Ollama Standby</span>
+              <span class="w-2 h-2 bg-amber-400 shadow-[0_0_5px_rgba(251,191,36,0.8)]"></span>
+              <span class="font-mono text-xs uppercase text-amber-400">[STATUS: STANDBY] Ollama</span>
             </div>
           </div>
         </div>
       </div>
 
       <div class="medical-card p-10 bg-white">
-        <h2 class="text-xl font-bold text-slate-800 mb-8 uppercase tracking-tight">Configuración de IA</h2>
-        <div class="grid sm:grid-cols-2 gap-6">
-          <button class="engine-select-btn p-6 border-technical text-left transition-all hover:bg-slate-50 group" data-engine="gemini">
+        <h2 class="text-xl font-black text-slate-800 mb-8 uppercase tracking-tight" data-es="Configuración de IA" data-en="AI Configuration">Configuración de IA</h2>
+        <div class="grid sm:grid-cols-2 gap-px bg-technical border border-technical">
+          <button class="engine-select-btn p-6 text-left transition-all bg-white hover:bg-slate-50 group" data-engine="gemini">
             <div class="flex items-center justify-between mb-4">
               <span class="font-mono font-bold text-slate-800 uppercase">Gemini Cloud</span>
-              <div class="w-4 h-4 border-technical group-hover:border-blue-600 transition-colors"></div>
+              <div class="w-4 h-4 border border-technical group-hover:border-primary transition-colors"></div>
             </div>
             <p class="medical-label">LATENCY_OPTIMIZED</p>
           </button>
-          <button class="engine-select-btn p-6 border-technical text-left transition-all hover:bg-slate-50 group" data-engine="qwen">
+          <button class="engine-select-btn p-6 text-left transition-all bg-white hover:bg-slate-50 group" data-engine="qwen">
             <div class="flex items-center justify-between mb-4">
               <span class="font-mono font-bold text-slate-800 uppercase">Ollama Local</span>
-              <div class="w-4 h-4 border-technical group-hover:border-blue-600 transition-colors"></div>
+              <div class="w-4 h-4 border border-technical group-hover:border-primary transition-colors"></div>
             </div>
-            <p class="medical-label">PRIVACY_FIRST_OFFLINE</p>
+            <p class="medical-label">PRIVACY_FIRST</p>
           </button>
         </div>
       </div>
     </div>
 
     <!-- Solana Burner Status -->
-    <div class="medical-card p-10 bg-blue-600 text-white flex flex-col">
+    <div class="medical-card p-10 bg-slate-900 text-white flex flex-col border-slate-700">
       <div class="flex justify-between items-start mb-12">
-        <h2 class="text-xl font-black uppercase tracking-tighter leading-tight">Solana<br/>Devnet</h2>
-        <span class="px-2 py-1 bg-white/20 font-mono text-[10px] font-black uppercase tracking-widest">BURNER_ACTIVE</span>
+        <h2 class="text-xl font-black uppercase tracking-tighter leading-tight text-white">Solana<br/>Devnet</h2>
+        <span class="px-2 py-1 bg-primary/20 text-primary border border-primary/50 font-mono text-[10px] font-black uppercase tracking-widest">[STATUS: ACTIVE]</span>
       </div>
       
       <div class="mt-auto">
-        <p class="medical-label text-blue-200 mb-1">NETWORK_BALANCE</p>
+        <p class="font-mono text-[10px] font-bold text-slate-500 uppercase mb-2">NETWORK_BALANCE</p>
         <p class="text-5xl font-mono font-black tracking-tighter mb-8" id="sol-balance-big">1.95 SOL</p>
-        <button id="refresh-solana" class="w-full py-5 bg-white text-blue-600 font-bold uppercase tracking-widest text-xs transition-all hover:bg-blue-50">
+        <button id="refresh-solana" class="w-full py-4 bg-transparent border border-slate-700 text-slate-300 font-bold font-mono text-xs uppercase tracking-widest transition-all hover:bg-slate-800 hover:border-slate-500">
           REFRESH_NODE
         </button>
       </div>

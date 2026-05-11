@@ -1,16 +1,34 @@
 ---
 ---
-<div class="medical-card p-4">
-  <h3 class="medical-label mb-3">Health Check</h3>
-  <div class="flex justify-between items-center text-sm mb-2 font-mono">
-    <span class="text-slate-600">Conexión</span>
-    <span class="font-bold text-emerald-600 flex items-center gap-2"><div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div> Online</span>
+<div class="medical-card p-4 border-technical">
+  <h3 class="font-mono text-xs font-bold uppercase tracking-wider mb-4 border-b border-technical pb-2 text-slate-800" data-es="Monitor de Hardware" data-en="Hardware Monitor">Monitor de Hardware</h3>
+  
+  <div class="flex justify-between items-center text-sm mb-3 font-mono">
+    <span class="text-[10px] text-slate-500 font-bold" data-es="LATENCIA_RED" data-en="NET_LATENCY">LATENCIA_RED</span>
+    <span class="font-bold text-slate-800 text-xs">24ms</span>
   </div>
-  <div class="flex justify-between items-center text-sm mb-2 font-mono">
-    <span class="text-slate-600">Model Fallback</span>
-    <select id="local-model-select" class="text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1 outline-none font-bold text-slate-700">
-      <option value="qwen2.5:0.5b">Qwen 2.5 (Local)</option>
-      <option value="gemini">Gemini (Nube)</option>
-    </select>
+
+  <div class="flex justify-between items-center text-sm mb-3 font-mono">
+    <span class="text-[10px] text-slate-500 font-bold" data-es="MOTOR_INFERENCIA" data-en="INFERENCE_ENGINE">MOTOR_INFERENCIA</span>
+    <div class="flex items-center gap-2">
+      <!-- LED físico: Cloud = Verde pulso, Local = Amarillo fijo. Controlled by JS below. -->
+      <div id="led-indicator" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_rgba(16,185,129,0.8)]"></div>
+      <select id="local-model-select" class="text-[10px] bg-slate-50 border border-technical rounded px-2 py-1 outline-none font-bold text-slate-800 uppercase">
+        <option value="gemini">Gemini (Cloud)</option>
+        <option value="qwen2.5:0.5b">Qwen 2.5 (Local)</option>
+      </select>
+    </div>
   </div>
 </div>
+
+<script>
+  const sel = document.getElementById('local-model-select');
+  const led = document.getElementById('led-indicator');
+  sel?.addEventListener('change', (e) => {
+    if (e.target.value === 'gemini') {
+      led.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_rgba(16,185,129,0.8)]';
+    } else {
+      led.className = 'w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_5px_rgba(251,191,36,0.8)]';
+    }
+  });
+</script>

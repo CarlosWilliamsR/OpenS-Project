@@ -2,23 +2,55 @@
 ---
 <div class="medical-card p-4 relative" id="search-container">
   <div class="mb-4">
-    <input type="text" id="patient-search" placeholder="Buscar paciente (ID, Nombre)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" autocomplete="off" />
+    <input type="text" id="patient-search" placeholder="Buscar paciente (ID, Nombre)" class="w-full bg-slate-50 border border-technical px-4 py-2.5 text-sm font-mono text-slate-900 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" autocomplete="off" />
     <p id="patient-search-hint" class="text-[10px] font-mono text-slate-400 mt-1.5 px-1"></p>
-    <div id="search-results" class="hidden absolute top-[70px] left-4 right-4 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto overflow-x-hidden"></div>
+    <div id="search-results" class="hidden absolute top-[70px] left-4 right-4 bg-white border border-technical z-50 max-h-64 overflow-y-auto overflow-x-hidden"></div>
   </div>
-  <div class="flex justify-between items-center mb-3">
-    <h3 class="medical-label">Directorio Local</h3>
-    <button class="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors">
-      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-    </button>
+  
+  <!-- Tab switcher: Directorio Local vs Supabase -->
+  <div class="flex items-center gap-0 mb-3 border-b border-technical">
+    <button id="tab-local" class="flex-1 py-2 text-[10px] font-mono font-bold uppercase tracking-wider text-center border-b-2 border-primary text-primary transition-colors" data-es="Directorio Local" data-en="Local Directory">Directorio Local</button>
+    <button id="tab-supabase" class="flex-1 py-2 text-[10px] font-mono font-bold uppercase tracking-wider text-center border-b-2 border-transparent text-slate-400 hover:text-slate-700 transition-colors" data-es="Supabase Cloud" data-en="Supabase Cloud">Supabase Cloud</button>
   </div>
-  <div id="patients-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1"></div>
+
+  <div id="patients-list" class="space-y-1 max-h-[300px] overflow-y-auto pr-1"></div>
 </div>
 
-<div class="medical-card p-4 mt-4">
+<div class="medical-card p-4 mt-4" id="history-pdf-container">
   <div class="flex justify-between items-center mb-4">
-    <h3 class="medical-label">Historial Clínico</h3>
-    <button id="download-history-pdf-btn" disabled class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-blue-50 hover:text-blue-600 disabled:opacity-50 transition-colors">PDF</button>
+    <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-technical pb-2 w-full flex justify-between" data-es="Historial Clínico" data-en="Clinical History">
+      <span data-es="Historial Clínico" data-en="Clinical History">Historial Clínico</span>
+      <button id="download-history-pdf-btn" disabled class="px-2 py-0.5 bg-slate-50 text-slate-600 border border-technical text-[10px] font-mono font-bold uppercase tracking-wider hover:bg-primary hover:text-white disabled:opacity-30 transition-colors">PDF</button>
+    </h3>
   </div>
-  <div id="records-list" class="space-y-2 max-h-[400px] overflow-y-auto"></div>
+  <div id="records-list" class="space-y-1 max-h-[400px] overflow-y-auto"></div>
 </div>
+
+<script>
+  // Tab switching logic
+  const tabLocal = document.getElementById('tab-local');
+  const tabSupabase = document.getElementById('tab-supabase');
+  
+  function setActiveTab(tab) {
+    const activeClasses = ['border-primary', 'text-primary'];
+    const inactiveClasses = ['border-transparent', 'text-slate-400', 'hover:text-slate-700'];
+    
+    if (tab === 'local') {
+      tabLocal.classList.add(...activeClasses);
+      tabLocal.classList.remove(...inactiveClasses);
+      tabSupabase.classList.remove(...activeClasses);
+      tabSupabase.classList.add(...inactiveClasses);
+    } else {
+      tabSupabase.classList.add(...activeClasses);
+      tabSupabase.classList.remove(...inactiveClasses);
+      tabLocal.classList.remove(...activeClasses);
+      tabLocal.classList.add(...inactiveClasses);
+    }
+    
+    // Dispatch event for asistente.astro to handle
+    document.dispatchEvent(new CustomEvent('patientTabChanged', { detail: { tab } }));
+  }
+
+  tabLocal?.addEventListener('click', () => setActiveTab('local'));
+  tabSupabase?.addEventListener('click', () => setActiveTab('supabase'));
+</script>

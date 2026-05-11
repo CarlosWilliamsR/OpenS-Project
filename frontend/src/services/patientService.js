@@ -2,28 +2,42 @@ const API_BASE = import.meta.env.PUBLIC_BACKEND_URL || 'http://localhost:8000/ap
 
 export default {
   async searchPatients(query, options = {}) {
-    // This would typically query Supabase via Backend or directly.
-    // For resilience, if no backend, return local mock or fallback.
-    return [
-      { id: 1, name: "Carlos Williams", age: 45 },
-      { id: 2, name: "Ana Martínez", age: 32 }
-    ].filter(p => p.name.toLowerCase().includes(query.toLowerCase()) || String(p.id) === query);
+    try {
+      const res = await fetch(`${API_BASE}/patients`, options);
+      if (!res.ok) throw new Error('Failed to fetch patients');
+      const data = await res.json();
+      if (!query) return data;
+      return data.filter(p => p.name.toLowerCase().includes(query.toLowerCase()) || String(p.id) === query);
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
   },
 
   async getPatient(id) {
-    return { id, name: "Carlos Williams", age: 45 };
+    try {
+      const patients = await this.searchPatients('');
+      return patients.find(p => String(p.id) === String(id)) || null;
+    } catch {
+      return null;
+    }
   },
 
   async getPatientRecords(patientId) {
-    // Should fetch from backend Supabase endpoint
-    return [];
+    try {
+      const res = await fetch(`${API_BASE}/patients/${patientId}/records`);
+      if (!res.ok) return [];
+      return await res.json();
+    } catch {
+      return [];
+    }
   },
 
   async askAssistant(patientId, prompt_text, model_preference = 'gemini') {
     const res = await fetch(`${API_BASE}/assistant/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ patient_id: patientId, prompt_text })
+      body: JSON.stringify({ patient_id: String(patientId), prompt_text })
     });
     if (!res.ok) throw new Error('AI backend error');
     return await res.json();
@@ -49,7 +63,7 @@ export default {
     const res = await fetch(`${API_BASE}/assistant/seal_record`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ patient_id: patientId, diagnosis_text: diagnosis, notes: reason })
+      body: JSON.stringify({ patient_id: String(patientId), diagnosis_text: diagnosis, notes: reason })
     });
     if (!res.ok) throw new Error('Supabase Sync error');
     return await res.json();

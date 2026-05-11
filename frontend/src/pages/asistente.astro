@@ -37,7 +37,7 @@ import SolanaStatus from '../components/SolanaStatus.astro';
     </div>
 
     <!-- Center Column: AI Assistant (Zero-Friction Chat) -->
-    <div class="col-span-12 xl:col-span-6 flex flex-col bg-white border-technical rounded-none overflow-hidden relative min-h-[680px]">
+    <div class="col-span-12 xl:col-span-6 flex flex-col bg-white border border-technical overflow-hidden relative min-h-[680px]">
       <ChatBox />
     </div>
 
@@ -46,20 +46,24 @@ import SolanaStatus from '../components/SolanaStatus.astro';
       <ResilienceMonitor />
       <ClinicalClosurePanel />
       
-      <div class="medical-card p-4">
-        <h3 class="medical-label mb-4">Pipeline Status: Mission Control</h3>
+      <div class="medical-card p-4 border border-technical">
+        <h3 class="font-mono text-xs font-bold uppercase tracking-wider mb-4 border-b border-technical pb-2 text-slate-800" data-es="Pipeline: Control de Misión" data-en="Pipeline: Mission Control">Pipeline: Control de Misión</h3>
         
-        <div id="pipeline-steps-ui" class="space-y-3 mb-6 font-mono">
+        <div id="pipeline-steps-ui" class="space-y-1 mb-6 font-mono bg-slate-900 p-4 border border-technical text-[10px] text-slate-300">
+           <div class="mb-2 text-primary font-bold">> SYSTEM_READY</div>
            {[
-             { id: 'step-ai', label: 'GEN_AI_DIAGNOSIS', icon: '>>' },
-             { id: 'step-voice', label: 'TTS_ELEVEN_LABS', icon: '>>' },
-             { id: 'step-solana', label: 'BLOCKCHAIN_HASH', icon: '>>' },
-             { id: 'step-db', label: 'SUPABASE_SYNC_OK', icon: '>>' }
+             { id: 'step-ai', label: 'EXEC /bin/ai_diagnosis --model=fallback', icon: '$' },
+             { id: 'step-voice', label: 'EXEC /bin/tts_elevenlabs --stream', icon: '$' },
+             { id: 'step-solana', label: 'EXEC /bin/solana_anchor --devnet', icon: '$' },
+             { id: 'step-db', label: 'EXEC /bin/supabase_sync --commit', icon: '$' }
            ].map(step => (
-             <div id={`step-row-${step.id}`} class="flex items-center gap-2 opacity-30 grayscale transition-all text-[10px]">
-              <span class="text-blue-600 font-bold">{step.icon}</span>
-              <span class="font-bold text-slate-500">{step.label}</span>
-              <div id={`step-dot-${step.id}`} class="ml-auto w-1.5 h-1.5 bg-slate-300"></div>
+             <div id={`step-row-${step.id}`} class="flex items-start gap-2 opacity-30 grayscale transition-all text-[10px] leading-tight">
+              <span class="text-primary font-bold mt-0.5">{step.icon}</span>
+              <div class="flex flex-col w-full">
+                <span class="font-bold text-slate-400">{step.label}</span>
+                <span id={`step-status-${step.id}`} class="text-slate-500 hidden">[WAITING...]</span>
+                <div id={`step-dot-${step.id}`} class="hidden w-1.5 h-1.5 bg-slate-300"></div>
+              </div>
              </div>
            ))}
         </div>
@@ -126,8 +130,8 @@ let isGeneratingHistoryPdf = false;
 function showToast(msg:string, type:'success'|'error'|'info'='info') {
   const container = $('toast-container');
   const el = document.createElement('div');
-  const colors = { success: 'bg-slate-900 text-white', error: 'bg-red-600 text-white', info: 'bg-blue-600 text-white' };
-  el.className = `${colors[type]} px-6 py-4 rounded-2xl shadow-2xl text-sm font-bold animate-slide-in border border-white/10 transition-opacity duration-500`;
+  const colors = { success: 'bg-slate-900 text-white', error: 'bg-red-600 text-white', info: 'bg-slate-900 text-white' };
+  el.className = `${colors[type]} px-6 py-3 text-sm font-mono font-bold border border-slate-700 transition-opacity duration-500`;
   el.textContent = msg;
   container.appendChild(el);
   setTimeout(() => { 
@@ -140,7 +144,7 @@ function showToast(msg:string, type:'success'|'error'|'info'='info') {
 function renderMd(t:string){
   return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/^## (.*)$/gm,'<h4 class="font-bold text-slate-800 mt-3 mb-1">$1</h4>')
-    .replace(/\*\*(.*?)\*\*/g,'<strong class="text-blue-600">$1</strong>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong class="text-slate-900 font-black">$1</strong>')
     .replace(/^- (.*)$/gm,'<li class="ml-4 mb-1">$1</li>')
     .replace(/\n/g,'<br/>');
 }
@@ -149,11 +153,11 @@ function setReplyMode(mode:'audio'|'text') {
   replyMode = mode;
   if (replyModeAudioBtn && replyModeTextBtn) {
     if (mode === 'audio') {
-      replyModeAudioBtn.className = 'px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-colors bg-blue-600 text-white shadow-sm';
-      replyModeTextBtn.className = 'px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-colors text-slate-500 hover:text-slate-700';
+      replyModeAudioBtn.className = 'px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition-colors bg-slate-900 text-white';
+      replyModeTextBtn.className = 'px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition-colors text-slate-500 hover:text-slate-900';
     } else {
-      replyModeTextBtn.className = 'px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-colors bg-slate-900 text-white shadow-sm';
-      replyModeAudioBtn.className = 'px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-colors text-slate-500 hover:text-slate-700';
+      replyModeTextBtn.className = 'px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition-colors bg-slate-900 text-white';
+      replyModeAudioBtn.className = 'px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition-colors text-slate-500 hover:text-slate-900';
     }
   }
 }
@@ -162,7 +166,9 @@ function addMsg(role:'user'|'assistant', text:string){
   const el = document.createElement('div');
   el.className = `flex ${role==='user'?'justify-end':'justify-start'} animate-fade-in`;
   const inner = document.createElement('div');
-  inner.className = `max-w-[85%] px-5 py-4 rounded-[1.5rem] text-sm ${role==='user'?'bg-blue-600 text-white rounded-br-none shadow-lg shadow-blue-600/20':'bg-slate-100 text-slate-800 rounded-bl-none'}`;
+  inner.className = role==='user'
+    ? 'max-w-[85%] px-5 py-3 text-sm bg-slate-900 text-white border border-slate-700 font-mono'
+    : 'max-w-[85%] px-5 py-3 text-sm bg-white text-slate-900 border border-technical font-mono';
   inner.innerHTML = text ? renderMd(text) : '<div class="flex gap-1 py-1"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
   el.appendChild(inner);
   chatMessages.appendChild(el);
@@ -420,15 +426,23 @@ async function runMagicPipeline() {
   statusBar.classList.remove('hidden');
   btn.setAttribute('disabled', 'true');
   
-  const updateStep = (id:string, status:'active'|'success'|'error') => {
+  const updateStep = (id:string, status:'active'|'success'|'error', text?:string) => {
     const row = $(`step-row-${id}`);
-    const dot = $(`step-dot-${id}`);
+    const statusEl = $(`step-status-${id}`);
     if (status === 'active') {
       row.classList.remove('opacity-30', 'grayscale');
-      dot.className = 'ml-auto w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse';
+      if (statusEl) {
+        statusEl.classList.remove('hidden', 'text-emerald-400', 'text-red-400');
+        statusEl.classList.add('text-primary', 'animate-pulse');
+        statusEl.textContent = text || '[EXECUTING...]';
+      }
     } else if (status === 'success') {
       row.classList.remove('opacity-30', 'grayscale');
-      dot.className = 'ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500';
+      if (statusEl) {
+        statusEl.classList.remove('hidden', 'text-primary', 'animate-pulse');
+        statusEl.classList.add('text-emerald-400');
+        statusEl.textContent = text || '[OK]';
+      }
     }
   };
 
@@ -505,14 +519,14 @@ function escapeHtml(value:string = '') {
 function updateSyncBadge(state: 'syncing' | 'ok' | 'error') {
   if (!supabaseSyncBadge) return;
   if (state === 'syncing') {
-    supabaseSyncBadge.textContent = 'Sincronizando';
-    supabaseSyncBadge.className = 'px-3 py-1.5 rounded-full border border-slate-300 bg-slate-100 text-[11px] font-black uppercase tracking-wider text-slate-600';
+    supabaseSyncBadge.textContent = '[SYNCING...]';
+    supabaseSyncBadge.className = 'px-3 py-1.5 border border-technical bg-slate-50 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 animate-pulse';
   } else if (state === 'ok') {
-    supabaseSyncBadge.textContent = 'Supabase online';
-    supabaseSyncBadge.className = 'px-3 py-1.5 rounded-full border border-emerald-200 bg-emerald-50 text-[11px] font-black uppercase tracking-wider text-emerald-700';
+    supabaseSyncBadge.textContent = '[SUPABASE: OK]';
+    supabaseSyncBadge.className = 'px-3 py-1.5 border border-emerald-300 bg-emerald-50 text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700';
   } else {
-    supabaseSyncBadge.textContent = 'Error de sync';
-    supabaseSyncBadge.className = 'px-3 py-1.5 rounded-full border border-red-200 bg-red-50 text-[11px] font-black uppercase tracking-wider text-red-700';
+    supabaseSyncBadge.textContent = '[SYNC: ERR]';
+    supabaseSyncBadge.className = 'px-3 py-1.5 border border-red-300 bg-red-50 text-[10px] font-mono font-bold uppercase tracking-wider text-red-700';
   }
 }
 
@@ -525,10 +539,13 @@ function renderPatientsList(patients:any[]) {
 
   pList.innerHTML = patients.map((p:any) => {
     const isActive = currentPatient && String(currentPatient.id) === String(p.id);
+    const pName = p.name || ('Paciente ' + p.id);
+    const conditions = p.conditions || '';
     return `
-      <button class="patient-item w-full p-4 rounded-2xl border transition-all text-left group ${isActive ? 'bg-sky-50 border-sky-200 shadow-sm' : 'bg-slate-50 hover:bg-sky-50 border-slate-200 hover:border-sky-200'}" data-id="${p.id}">
-        <p class="text-sm font-bold ${isActive ? 'text-sky-800' : 'text-slate-800 group-hover:text-sky-800'}">${escapeHtml(p.name || `Paciente ${p.id}`)}</p>
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">${p.age || '—'} años · ID:${p.id}</p>
+      <button class="patient-item w-full p-4 border border-technical transition-all text-left group ${isActive ? 'bg-slate-50 border-primary shadow-[inset_2px_0_0_0_#0052FF]' : 'bg-white hover:bg-slate-50'}" data-id="${p.id}">
+        <p class="text-sm font-bold font-mono ${isActive ? 'text-primary' : 'text-slate-800 group-hover:text-primary'}">${escapeHtml(pName)}</p>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">${p.age || '—'} YRS | ID:${p.id}</p>
+        ${conditions ? `<p class="text-[10px] font-mono text-slate-400 mt-1 truncate">${escapeHtml(conditions)}</p>` : ''}
       </button>
     `;
   }).join('');
@@ -536,50 +553,70 @@ function renderPatientsList(patients:any[]) {
 
 async function loadPatientHistory(patientId:number) {
   const recordsList = $('records-list');
-  recordsList.innerHTML = '<div class="animate-pulse space-y-2"><div class="h-4 bg-slate-100 rounded w-full"></div><div class="h-4 bg-slate-100 rounded w-2/3"></div></div>';
-  const records = await patientService.getPatientRecords(patientId);
-  currentRecords = records;
-  if (downloadHistoryPdfBtn) {
-    if (records.length) {
-      downloadHistoryPdfBtn.removeAttribute('disabled');
-    } else {
-      downloadHistoryPdfBtn.setAttribute('disabled', 'true');
+  if (!recordsList) { console.error('records-list element not found'); return; }
+  recordsList.innerHTML = '<div class="animate-pulse space-y-2"><div class="h-4 bg-slate-100 w-full"></div><div class="h-4 bg-slate-100 w-2/3"></div></div>';
+  try {
+    const records = await patientService.getPatientRecords(patientId);
+    console.log('[OpenS] Loaded', records.length, 'records for patient', patientId);
+    currentRecords = records;
+    if (downloadHistoryPdfBtn) {
+      if (records.length) {
+        downloadHistoryPdfBtn.removeAttribute('disabled');
+      } else {
+        downloadHistoryPdfBtn.setAttribute('disabled', 'true');
+      }
     }
+    recordsList.innerHTML = records.map((r:any) => {
+      const dateStr = r.date ? new Date(r.date).toLocaleDateString() : (r.created_at ? new Date(r.created_at).toLocaleDateString() : '—');
+      const desc = r.description || 'Consulta';
+      const diag = r.diagnosis || r.notes || '';
+      return `
+        <div class="p-3 bg-slate-50 border-l-2 border-primary border-t border-r border-b border-technical mb-1">
+          <div class="flex justify-between items-center mb-1">
+            <p class="text-[10px] font-bold font-mono text-primary uppercase">${escapeHtml(desc)}</p>
+            <p class="text-[10px] font-mono text-slate-400">${dateStr}</p>
+          </div>
+          ${diag ? `<p class="text-[11px] font-mono text-slate-700 leading-tight">${escapeHtml(diag.slice(0, 200))}${diag.length > 200 ? '...' : ''}</p>` : ''}
+        </div>
+      `;
+    }).join('') || '<p class="text-[10px] font-mono text-slate-400 text-center py-4 uppercase">Sin registros clínicos</p>';
+  } catch (err) {
+    console.error('[OpenS] Error loading patient history:', err);
+    recordsList.innerHTML = '<p class="text-[10px] font-mono text-red-500 text-center py-4">Error al cargar historial</p>';
   }
-  recordsList.innerHTML = records.map((r:any) => `
-    <div class="p-3 bg-white border border-slate-200 rounded-xl mb-2 shadow-sm">
-      <p class="text-[10px] font-bold text-sky-700 mb-1">${new Date(r.created_at).toLocaleDateString()}</p>
-      <p class="text-xs font-bold text-slate-800">${escapeHtml(r.description || 'Consulta')}</p>
-    </div>
-  `).join('') || '<p class="text-xs text-slate-400 text-center py-4">Sin registros previos</p>';
 }
 
 async function selectPatient(patient:any) {
-  const fresh = await patientService.getPatient(Number(patient.id));
-  currentPatient = fresh || patient;
-  conversation = [];
-  if (reasonInput) reasonInput.value = '';
-  if (finalDiagnosisInput) finalDiagnosisInput.value = '';
-  if (draftOutput) draftOutput.value = '';
-  if (downloadHistoryPdfBtn) downloadHistoryPdfBtn.setAttribute('disabled', 'true');
-  historyPdfContainer?.classList.remove('hidden');
-  chatMessages.innerHTML = `
-    <div class="text-center text-slate-500 mt-24">
-      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-sky-50 border border-sky-100 flex items-center justify-center shadow-sm">
-        <svg class="h-8 w-8 text-sky-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+  try {
+    const fresh = await patientService.getPatient(Number(patient.id));
+    currentPatient = fresh || patient;
+    conversation = [];
+    if (reasonInput) reasonInput.value = '';
+    if (finalDiagnosisInput) finalDiagnosisInput.value = '';
+    if (draftOutput) draftOutput.value = '';
+    if (downloadHistoryPdfBtn) downloadHistoryPdfBtn.setAttribute('disabled', 'true');
+    historyPdfContainer?.classList.remove('hidden');
+    const displayName = currentPatient.name || ('Paciente ' + currentPatient.id);
+    chatMessages.innerHTML = `
+      <div class="text-center text-slate-500 mt-24">
+        <div class="w-16 h-16 mx-auto mb-4 bg-slate-50 border border-technical flex items-center justify-center">
+          <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        </div>
+        <p class="font-mono font-black text-slate-900 text-base uppercase">${escapeHtml(displayName)}</p>
+        <p class="text-[10px] font-mono mt-2 text-slate-500 uppercase tracking-wider">SESSION_RESET // TRAZABILIDAD_CLINICA_ACTIVA</p>
       </div>
-      <p class="font-bold text-slate-800 text-base">Paciente activo: ${escapeHtml(currentPatient.name || `Paciente ${currentPatient.id}`)}</p>
-      <p class="text-[13px] font-medium mt-1 text-slate-500">El historial conversacional fue reiniciado para mantener trazabilidad clínica.</p>
-    </div>
-  `;
-  patientLabel.textContent = currentPatient.name || `Paciente ${currentPatient.id}`;
-  showToast(`Paciente ${currentPatient.name} seleccionado`, 'info');
-  audioSummaryBtn?.classList.remove('hidden');
-  $('diagnosis-container')?.classList.remove('hidden');
-  $('magic-finalize-btn')?.removeAttribute('disabled');
-  await loadPatientHistory(Number(currentPatient.id));
-  renderPatientsList(allPatients);
-  bindPatientListEvents();
+    `;
+    if (patientLabel) patientLabel.textContent = displayName;
+    showToast('Paciente ' + (currentPatient.name || currentPatient.id) + ' seleccionado', 'info');
+    audioSummaryBtn?.classList.remove('hidden');
+    $('diagnosis-container')?.classList.remove('hidden');
+    $('magic-finalize-btn')?.removeAttribute('disabled');
+    await loadPatientHistory(Number(currentPatient.id));
+    renderPatientsList(allPatients);
+    bindPatientListEvents();
+  } catch (err) {
+    console.error('[OpenS] Error in selectPatient:', err);
+  }
 }
 
 function bindPatientListEvents() {
@@ -621,9 +658,9 @@ async function performSearch(query:string) {
 
     searchResults.classList.remove('hidden');
     searchResults.innerHTML = results.map((p:any) => `
-      <button class="search-result-item w-full text-left px-4 py-3 border-b border-slate-100 hover:bg-sky-50 transition-colors last:border-b-0" data-id="${p.id}">
-        <p class="text-sm font-bold text-slate-800">${escapeHtml(p.name || `Paciente ${p.id}`)}</p>
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ID:${p.id}</p>
+      <button class="search-result-item w-full text-left px-4 py-3 border-b border-technical hover:bg-slate-50 transition-colors last:border-b-0" data-id="${p.id}">
+        <p class="text-sm font-mono font-bold text-slate-900">${escapeHtml(p.name || `Paciente ${p.id}`)}</p>
+        <p class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">ID:${p.id}</p>
       </button>
     `).join('');
 
@@ -713,8 +750,10 @@ chatForm?.addEventListener('submit', async (e) => {
     
     // Update badge
     const eng = data.engine_used;
-    aiBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-${eng==='gemini'?'emerald':'amber'}-500 animate-pulse"></span>
-                         <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inference: ${eng==='gemini'?'Cloud':'Local'}</span>`;
+    const engColor = eng === 'gemini' ? 'emerald' : 'amber';
+    const engLabel = eng === 'gemini' ? 'Cloud (Gemini)' : 'Local (Qwen)';
+    aiBadge.innerHTML = `<span class="w-2 h-2 bg-${engColor}-500 animate-pulse shadow-[0_0_5px_rgba(0,0,0,0.3)]"></span>
+                         <span class="text-[10px] font-mono font-bold text-slate-800 uppercase tracking-widest">[INFERENCE: ${engLabel}]</span>`;
   } catch(err) {
     skeleton.remove();
     addMsg('assistant', 'Lo siento, hubo un error en la conexión.');

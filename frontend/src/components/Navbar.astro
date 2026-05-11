@@ -1,15 +1,49 @@
 ---
 ---
-<nav class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
-  <div class="flex items-center gap-4">
-    <a href="/" class="font-black text-2xl tracking-tighter text-blue-600">OpenS</a>
-    <div class="hidden md:flex gap-2">
-      <a href="/asistente" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Asistente</a>
-      <a href="/admin" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Admin</a>
-      <a href="/docs" class="px-3 py-1.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Docs</a>
+<nav class="bg-white border-b border-technical px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+  <div class="flex items-center gap-6">
+    <a href="/" class="font-black text-2xl tracking-tighter text-primary">OpenS</a>
+    <div class="hidden md:flex gap-4">
+      <a href="/asistente" class="px-2 py-1 text-sm font-bold text-slate-800 hover:text-primary transition-colors" data-es="Asistente" data-en="Assistant">Asistente</a>
+      <a href="/admin" class="px-2 py-1 text-sm font-bold text-slate-800 hover:text-primary transition-colors" data-es="Admin" data-en="Admin">Admin</a>
+      <a href="/docs" class="px-2 py-1 text-sm font-bold text-slate-800 hover:text-primary transition-colors" data-es="Docs" data-en="Docs">Docs</a>
     </div>
   </div>
-  <div class="flex items-center gap-3">
-    <span id="supabase-sync-badge" class="px-3 py-1.5 rounded-full border border-slate-300 bg-slate-100 text-[11px] font-black uppercase tracking-wider text-slate-600">Inicializando...</span>
+  <div class="flex items-center gap-4">
+    <!-- Language Toggle -->
+    <div class="flex bg-slate-100 rounded-md p-0.5 border-technical">
+      <button id="lang-es-btn" class="px-2 py-1 text-[10px] font-mono font-bold uppercase rounded text-slate-900 bg-white shadow-sm">ES</button>
+      <button id="lang-en-btn" class="px-2 py-1 text-[10px] font-mono font-bold uppercase rounded text-slate-500 hover:text-slate-900">EN</button>
+    </div>
+    <span id="supabase-sync-badge" class="px-3 py-1.5 border border-technical bg-slate-50 text-[10px] font-mono font-black uppercase tracking-wider text-slate-800" data-es="Inicializando..." data-en="Initializing...">Inicializando...</span>
   </div>
 </nav>
+
+<script>
+  const esBtn = document.getElementById('lang-es-btn');
+  const enBtn = document.getElementById('lang-en-btn');
+
+  function setLanguage(lang) {
+    localStorage.setItem('opens_lang', lang);
+    if (lang === 'es') {
+      esBtn.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+      esBtn.classList.remove('text-slate-500', 'hover:text-slate-900');
+      enBtn.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
+      enBtn.classList.add('text-slate-500', 'hover:text-slate-900');
+    } else {
+      enBtn.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+      enBtn.classList.remove('text-slate-500', 'hover:text-slate-900');
+      esBtn.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
+      esBtn.classList.add('text-slate-500', 'hover:text-slate-900');
+    }
+    const event = new CustomEvent('languageChanged', { detail: { lang } });
+    document.dispatchEvent(event);
+  }
+
+  esBtn?.addEventListener('click', () => setLanguage('es'));
+  enBtn?.addEventListener('click', () => setLanguage('en'));
+
+  // Initialize UI buttons based on saved preference
+  const savedLang = localStorage.getItem('opens_lang') || 'es';
+  setLanguage(savedLang);
+</script>
