@@ -100,7 +100,7 @@ import Navbar from '../components/Navbar.astro';
     const form = document.getElementById('insurance-form') as HTMLFormElement;
 
     const data = await apiFetch(`${API}/patients`);
-    const patients = data?.patients || [];
+    const patients = Array.isArray(data) ? data : (data?.patients || []);
     if (patients.length === 0) {
       patientSelect.innerHTML = '<option value="">Sin pacientes registrados</option>';
     } else {
