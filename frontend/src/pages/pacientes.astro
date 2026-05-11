@@ -53,10 +53,15 @@ import Navbar from '../components/Navbar.astro';
   import { jsPDF } from 'jspdf';
   const API = '/api/v1';
   const downloadHistoryBtn = document.getElementById('download-history-btn') as HTMLButtonElement;
+  const API_BASES = [API, 'http://localhost:8000/api/v1', 'http://localhost:8001/api/v1'];
 
   async function apiFetch(path: string) {
-    try { const r = await fetch(path); if (r.ok) return await r.json(); } catch {}
-    try { const r = await fetch(`http://localhost:8001${path}`); if (r.ok) return await r.json(); } catch {}
+    for (const base of API_BASES) {
+      try {
+        const r = await fetch(`${base}${path.replace(API, '')}`);
+        if (r.ok) return await r.json();
+      } catch {}
+    }
     return null;
   }
 
@@ -68,15 +73,6 @@ import Navbar from '../components/Navbar.astro';
   let currentPatient: any = null;
   let currentRecords: any[] = [];
   let isGeneratingPdf = false;
-
-  function esc(value: any) {
-    return String(value ?? '')
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#039;');
-  }
 
   async function renderPatient(patient: any) {
     currentPatient = patient;
@@ -93,7 +89,7 @@ import Navbar from '../components/Navbar.astro';
     document.getElementById('profile-details')!.innerHTML = details.join('');
 
     const recData = await apiFetch(`${API}/patients/${patient.id}/records`);
-    const records = recData?.records || [];
+    const records = Array.isArray(recData) ? recData : (recData?.records || []);
     currentRecords = records;
     downloadHistoryBtn.disabled = !records.length;
     const container = document.getElementById('patient-records')!;
@@ -184,7 +180,7 @@ import Navbar from '../components/Navbar.astro';
   // Load patients from Supabase
   (async () => {
     const data = await apiFetch(`${API}/patients`);
-    allPatients = data?.patients || [];
+    allPatients = Array.isArray(data) ? data : (data?.patients || []);
     const selector = document.getElementById('patient-selector') as HTMLSelectElement;
 
     if (allPatients.length === 0) {

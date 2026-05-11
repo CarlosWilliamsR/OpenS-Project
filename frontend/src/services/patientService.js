@@ -1,42 +1,96 @@
-const API_BASE = import.meta.env.PUBLIC_BACKEND_URL || 'http://localhost:8000/api/v1';
+const envBase = import.meta.env.PUBLIC_BACKEND_URL || '';
+
+function normalizeApiBase(base) {
+  if (!base) return null;
+  const sanitized = String(base).replace(/\/+$/, '');
+  return sanitized.endsWith('/api/v1') ? sanitized : `${sanitized}/api/v1`;
+}
+
+const API_BASES = [
+  normalizeApiBase(envBase),
+  '/api/v1',
+  'http://localhost:8000/api/v1',
+  'http://localhost:8001/api/v1'
+].filter((value, index, list) => Boolean(value) && list.indexOf(value) === index);
+
+async function fetchAny(path, options = {}) {
+  let lastError = null;
+  for (const base of API_BASES) {
+    try {
+      const response = await fetch(`${base}${path}`, options);
+      if (!response.ok) {
+        lastError = new Error(`Backend error ${response.status} on ${base}${path}`);
+        continue;
+      }
+      return response;
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') throw error;
+      lastError = error;
+    }
+  }
+  throw lastError || new Error(`No backend available for ${path}`);
+}
+
+async function fetchJson(path, options = {}) {
+  const response = await fetchAny(path, options);
+  return response.json();
+}
+
+function normalizePatients(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.patients)) return payload.patients;
+  return [];
+}
+
+function normalizeRecords(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.records)) return payload.records;
+  return [];
+}
 
 export default {
-  async searchPatients(query, options = {}) {
-    // This would typically query Supabase via Backend or directly.
-    // For resilience, if no backend, return local mock or fallback.
-    return [
-      { id: 1, name: "Carlos Williams", age: 45 },
-      { id: 2, name: "Ana Martínez", age: 32 }
-    ].filter(p => p.name.toLowerCase().includes(query.toLowerCase()) || String(p.id) === query);
+  async searchPatients(query = '', options = {}) {
+    const payload = await fetchJson('/patients', { signal: options.signal });
+    const patients = normalizePatients(payload);
+    const normalizedQuery = String(query || '').trim().toLowerCase();
+    if (!normalizedQuery) return patients;
+    return patients.filter((patient) => {
+      const byName = String(patient?.name || '').toLowerCase().includes(normalizedQuery);
+      const byId = String(patient?.id || '') === normalizedQuery;
+      return byName || byId;
+    });
   },
 
-  async getPatient(id) {
-    return { id, name: "Carlos Williams", age: 45 };
+  async getPatient(id, options = {}) {
+    const patients = await this.searchPatients('', options);
+    const found = patients.find((patient) => String(patient?.id) === String(id));
+    return found || { id, name: `Paciente ${id}` };
   },
 
-  async getPatientRecords(patientId) {
-    // Should fetch from backend Supabase endpoint
-    return [];
+  async getPatientRecords(patientId, options = {}) {
+    const payload = await fetchJson(`/patients/${patientId}/records`, { signal: options.signal });
+    return normalizeRecords(payload);
   },
 
   async askAssistant(patientId, prompt_text, model_preference = 'gemini') {
-    const res = await fetch(`${API_BASE}/assistant/ask`, {
+    const data = await fetchJson('/assistant/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ patient_id: patientId, prompt_text })
+      body: JSON.stringify({ patient_id: Number(patientId), prompt_text, model_preference })
     });
-    if (!res.ok) throw new Error('AI backend error');
-    return await res.json();
+    if (!data.engine_used) {
+      data.engine_used = 'fallback';
+    }
+    return data;
   },
 
   async synthesizeVoice(text) {
-    const res = await fetch(`${API_BASE}/assistant/tts`, {
+    const response = await fetchAny('/assistant/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text })
     });
-    if (!res.ok) throw new Error('TTS error');
-    return await res.blob();
+    return response.blob();
   },
 
   async generateDraftDiagnosis(patientId, conversation, doctorNotes, model) {
@@ -46,12 +100,13 @@ export default {
   },
 
   async finalizeConsultation(patientId, diagnosis, hash, txSignature, reason) {
-    const res = await fetch(`${API_BASE}/assistant/seal_record`, {
+    const notes = [reason, hash && `hash:${hash}`, txSignature && `frontend_tx:${txSignature}`]
+      .filter(Boolean)
+      .join(' | ');
+    return fetchJson('/assistant/seal_record', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ patient_id: patientId, diagnosis_text: diagnosis, notes: reason })
+      body: JSON.stringify({ patient_id: Number(patientId), diagnosis_text: diagnosis, notes })
     });
-    if (!res.ok) throw new Error('Supabase Sync error');
-    return await res.json();
   }
 };

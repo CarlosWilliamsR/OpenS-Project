@@ -52,6 +52,7 @@ class PatientQueryRequest(BaseModel):
 class AssistantResponse(BaseModel):
     response: str
     patient_id: int
+    engine_used: str
 
 
 class RecordSealRequest(BaseModel):
@@ -218,14 +219,18 @@ async def ask_assistant(request: PatientQueryRequest):
     try:
         # Fetch patient history
         patient_history = await fetch_patient_history(request.patient_id)
-        
+
         # Build context with patient history
         context = ""
         if patient_history:
             context = "\n\nPatient Medical History:\n"
             for record in patient_history:
-                context += f"- Date: {record.get('date', 'N/A')}, Notes: {record.get('notes', 'N/A')}\n"
-        
+                diagnosis = record.get("diagnosis") or record.get("description") or record.get("notes") or "N/A"
+                context += f"- Date: {record.get('date', 'N/A')}, Diagnosis: {diagnosis}\n"
+
+        assistant_response = ""
+        engine_used = "fallback"
+
         # Try Gemini first
         if GOOGLE_API_KEY:
             try:
@@ -238,6 +243,7 @@ async def ask_assistant(request: PatientQueryRequest):
                 user_message = f"{system_instruction}\n\nUser: {request.prompt_text}{context}"
                 response = model.generate_content(user_message)
                 assistant_response = response.text or "No response generated."
+                engine_used = "gemini"
             except Exception as e:
                 print(f"Gemini failed: {e}. Falling back to Ollama.")
                 if ollama_client and OLLAMA_MODELS:
@@ -253,6 +259,7 @@ async def ask_assistant(request: PatientQueryRequest):
                         max_tokens=500
                     )
                     assistant_response = response.choices[0].message.content or "No response generated."
+                    engine_used = f"ollama:{model_to_use}"
                 else:
                     assistant_response = "Both AI services failed or are not configured properly."
         else:
@@ -265,7 +272,8 @@ async def ask_assistant(request: PatientQueryRequest):
         
         return AssistantResponse(
             response=assistant_response,
-            patient_id=request.patient_id
+            patient_id=request.patient_id,
+            engine_used=engine_used,
         )
     
     except Exception as e:
