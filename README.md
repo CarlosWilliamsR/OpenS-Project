@@ -216,6 +216,6 @@ Este proyecto se encuentra actualmente participando y evolucionando para la pres
 Nos enorgullece destacar que OpenS ya demostró su potencial e innovación técnica al haber participado exitosamente en la hackathon 3devpack, donde consolidamos nuestras primeras bases Web3.
 
 - 💻 **Carlos Williams** - Fundador y Desarrollador Principal (Lead Dev).
-- 🎨 **Aysha Tovar** - Diseño UX/UI (User Experience & Interface).
+- 🎨 **Aysha Tovar** - Diseño UX/UI (Colaborador (Edición 3devpack)).
 - 🤝 **Santiago Valecillos** - Colaborador (Edición 3devpack).
 - 🤝 **Gabriela Carpio** - Colaboradora (Edición 3devpack).
