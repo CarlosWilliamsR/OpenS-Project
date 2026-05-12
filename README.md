@@ -1,166 +1,329 @@
 <div align="center">
-  
-  <h1>OpenS: El CRM Médico Inteligente con Arquitectura Híbrida</h1>
-  <p><em>Fortaleciendo la atención primaria de salud con IA, Voice Synthesis y Blockchain.</em></p>
+  <img src="https://raw.githubusercontent.com/CarlosWilliamsR/OpenS-Project/main/public/logo.png" alt="OpenS Logo" width="150" height="150" />
+  <h1>OpenS · CRM Médico Inteligente (AI + Voice + Web3)</h1>
+  <p><em>Proyecto oficial para Solana Colosseum · evolución de la participación en Hackathon 3 Devpack.</em></p>
 
   [![Astro](https://img.shields.io/badge/Astro-FF5D01?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
   [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/)
   [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
   [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
   [![Solana](https://img.shields.io/badge/Solana-14F195?style=for-the-badge&logo=solana&logoColor=black)](https://solana.com/)
-  [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![Anchor](https://img.shields.io/badge/Anchor-2E2E2E?style=for-the-badge&logo=solana&logoColor=14F195)](https://www.anchor-lang.com/)
+  [![Ollama](https://img.shields.io/badge/Ollama-111111?style=for-the-badge)](https://ollama.com/)
+  [![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+  [![ElevenLabs](https://img.shields.io/badge/ElevenLabs-000000?style=for-the-badge)](https://elevenlabs.io/)
+  [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 </div>
 
 ---
 
-**OpenS** es un ecosistema digital diseñado para fortalecer la atención primaria de salud, especialmente en comunidades vulnerables. Evoluciona de un asistente clínico a un **CRM Médico Integral** que fusiona inteligencia artificial avanzada con un repositorio centralizado de historiales clínicos para empoderar a los profesionales de la salud.
+## 📌 ¿Qué es OpenS?
 
-## 🌟 Visión General
+**OpenS** es un CRM médico asistido por IA para atención primaria, diseñado para operar en contextos reales con conectividad variable:
 
-El sistema permite a médicos y enfermeros gestionar interacciones, seguimientos y diagnósticos desde una plataforma unificada y humanizada. Su objetivo principal es eliminar la "brecha de olvido institucional" en centros de salud con alta rotación de personal, garantizando que el historial del paciente sea un activo para su recuperación.
-
-### 📸 Vistazos de la Plataforma
-
-| Pantalla de Inicio | Asistente de IA | Dashboard Admin |
-| --- | --- | --- |
-| <img src="multimedia/home.png" width="250" /> | <img src="multimedia/assistant.png" width="250" /> | <img src="multimedia/admin.png" width="250" /> |
-
-### Beneficios Clave
-
-* **Para el Médico:** Reduce la carga administrativa y proporciona resúmenes precisos para la toma de decisiones.
-* **Para el Paciente:** Recibe atención informada y empática, con herramientas de accesibilidad de voz para personas con discapacidades o de la tercera edad.
-* **Resiliencia:** Garantiza **Cero Tiempo de Inactividad** mediante una arquitectura que funciona con o sin internet.
+1. **IA clínica híbrida** (Gemini en nube + Qwen local vía Ollama como fallback).
+2. **Síntesis de voz** (ElevenLabs con fallback local).
+3. **Persistencia clínica** en Supabase/PostgreSQL.
+4. **Inmutabilidad Web3** al sellar diagnósticos en **Solana Devnet** mediante un programa Anchor.
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## 🖼️ Multimedia de la demo
 
-OpenS utiliza una arquitectura desacoplada y modular que separa la interfaz de usuario de la lógica de negocio y los servicios de IA.
+| Home | Asistente | Admin |
+| --- | --- | --- |
+| <img src="multimedia/home.png" width="260" /> | <img src="multimedia/assistant.png" width="260" /> | <img src="multimedia/admin.png" width="260" /> |
+
+<div align="center">
+  <img src="multimedia/demo.gif" alt="OpenS Demo" width="820" />
+</div>
+
+---
+
+## 🏗️ Arquitectura técnica (detallada)
 
 ```mermaid
 graph TD
-    subgraph Frontend [Frontend: Astro + Tailwind]
-        UI[Interfaz de Usuario]
+    subgraph Client["Frontend (Astro + TS + Tailwind)"]
+        UI["UI clínica"]
+        Pipeline["Pipeline de cierre"]
     end
 
-    subgraph Backend [Backend: FastAPI]
-        API[API Router]
-        AI_Fallback[IA Híbrida: Gemini / Ollama]
-        TTS[ElevenLabs Voz]
-        BC[Solana Anchor RPC]
+    subgraph API["Backend (FastAPI / Python)"]
+        Router["REST /api/v1"]
+        AI["Asistente IA"]
+        TTS["Síntesis de voz"]
+        Seal["Seal Record (Web3)"]
     end
 
-    subgraph Database [Capa de Datos]
-        Supa[(Supabase PG)]
+    subgraph Data["Persistencia"]
+        Supa["Supabase (PostgreSQL)"]
     end
 
-    subgraph Blockchain [Capa Inmutable]
-        Sol(Solana Devnet)
+    subgraph Models["Motores de IA"]
+        Gemini["Gemini 2.5 Flash (cloud)"]
+        Ollama["Ollama local (Qwen)"]
     end
 
-    UI -->|HTTP POST /ask| API
-    UI -->|HTTP GET /patients| API
-    API --> AI_Fallback
-    API --> TTS
-    API --> Supa
-    API -->|Seal Record| BC
-    BC --> Sol
+    subgraph Chain["Blockchain"]
+        Anchor["Programa Anchor"]
+        Sol["Solana Devnet"]
+    end
+
+    UI --> Router
+    Pipeline --> Router
+    Router --> AI
+    AI --> Gemini
+    AI --> Ollama
+    Router --> TTS
+    Router --> Supa
+    Router --> Seal
+    Seal --> Anchor
+    Anchor --> Sol
+    Seal --> Supa
+```
+
+### Flujo clínico end-to-end
+
+```mermaid
+sequenceDiagram
+    participant D as Doctor UI
+    participant B as FastAPI
+    participant G as Gemini
+    participant O as Ollama/Qwen
+    participant E as ElevenLabs
+    participant S as Solana/Anchor
+    participant DB as Supabase
+
+    D->>B: POST /assistant/ask
+    alt Gemini disponible
+      B->>G: Prompt clínico
+      G-->>B: Respuesta IA
+    else Fallback local
+      B->>O: Prompt clínico
+      O-->>B: Respuesta Qwen
+    end
+    B-->>D: Diagnóstico asistido
+
+    D->>B: POST /assistant/tts
+    B->>E: TTS request
+    E-->>B: Audio mpeg
+    B-->>D: Audio respuesta
+
+    D->>B: POST /assistant/seal_record
+    B->>S: register_record(hash)
+    S-->>B: tx signature + PDA
+    B->>DB: insert medical_records
+    B-->>D: Estado final + solscan_url
 ```
 
 ---
 
-## 🧠 Lógica de IA Híbrida (Fallback)
+## 🧰 Infraestructura y componentes
 
-Para garantizar la disponibilidad en entornos con conectividad inestable (común en zonas rurales o ambulatorios populares), OpenS implementa una transición transparente entre la nube y modelos locales.
-
-**Flujo de decisión:**
-1. **Motor Cloud:** Utiliza **Google Gemini 2.5 Flash** para análisis complejos y alta velocidad.
-2. **Motor Edge/Local:** Si la API Key no está configurada, expira o hay un error de red, el sistema activa una cadena de modelos locales vía **Ollama**.
-3. **Modelos Locales:** Se prueban en secuencia (**Qwen2.5, Kimi-k2**, etc.) hasta que uno responda con éxito.
-
----
-
-## 🛠️ Stack Tecnológico
-
-| Componente | Tecnología | Descripción |
+| Capa | Componente | Rol |
 | --- | --- | --- |
-| **Frontend** | Astro 4 & Tailwind CSS | Interfaz rápida y optimizada. |
-| **Backend** | FastAPI (Python 3.11) | Centro de inteligencia y procesamiento de datos. |
-| **IA Cloud** | Google Gemini 2.5 Flash | Motor principal de generación de lenguaje. |
-| **IA Local** | Ollama (Qwen, Llama) | Respaldo para funcionamiento offline. |
-| **Base de Datos** | Supabase (PostgreSQL) | Archivo digital seguro de memorias clínicas. |
-| **Voz** | ElevenLabs | Accesibilidad mediante síntesis de voz hiperrealista. |
-| **Blockchain**| Solana (Anchor) | Sellado inmutable de diagnósticos médicos. |
+| Frontend | Astro + TypeScript | Interfaz médica, dashboard y orquestación UX del pipeline. |
+| Backend | FastAPI | API principal, integración con IA, TTS, Supabase y Solana. |
+| IA Cloud | Gemini 2.5 Flash | Motor principal para respuestas clínicas. |
+| IA Local | Ollama + Qwen2.5 | Fallback offline/edge cuando falla la nube. |
+| Voz | ElevenLabs | Síntesis de voz de alta naturalidad. |
+| Base de datos | Supabase PostgreSQL | Pacientes, historial médico y metadata de sellado. |
+| Blockchain | Solana Devnet + Anchor | Registro inmutable de hash clínico y trazabilidad. |
+| Observabilidad local | scripts de testing | Verificación de integraciones y smoke tests de API. |
 
 ---
 
-## 🚀 Guía de Ejecución Local (Paso a Paso)
+## ⚙️ Requisitos
 
-Para probar todas y cada una de las partes del software (Supabase, ElevenLabs, Gemini, Qwen, y Solana), sigue estos pasos cuidadosamente:
+1. **Python 3.11+**
+2. **Node.js 22+**
+3. **Git**
+4. **Ollama** (si usarás fallback local Qwen)
+5. **Solana CLI + wallet devnet** (para sellado real)
+6. Credenciales:
+   - Supabase (`SUPABASE_URL`, `SUPABASE_KEY`)
+   - Gemini (`GOOGLE_API_KEY` o `GEMINI_API_KEY`)
+   - ElevenLabs (`ELEVENLABS_API_KEY`)
+   - Solana (`SOLANA_PROGRAM_ID`, wallet local o `SOLANA_KEYPAIR_JSON`)
 
-### 1. Clonar el repositorio
+---
+
+## 🚀 Ejecución local paso a paso
+
+### 1) Clonar repositorio
+
 ```bash
 git clone https://github.com/CarlosWilliamsR/OpenS-Project.git
-cd OpenS
+cd OpenS-Project
 ```
 
-### 2. Configurar el Backend
+### 2) Backend
+
 ```bash
 cd backend
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env
 ```
-Configura tu archivo `.env` en la carpeta `backend` usando de guía el archivo existente. Necesitarás:
-- `GOOGLE_API_KEY`
-- `SUPABASE_URL` y `SUPABASE_KEY`
-- `ELEVENLABS_API_KEY`
-- `SOLANA_PROGRAM_ID`
 
-Levanta el servidor:
+Configura `backend/.env`:
+
+```env
+GOOGLE_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODELS=qwen2.5:7b
+SUPABASE_URL=
+SUPABASE_KEY=
+ELEVENLABS_API_KEY=
+ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
+SOLANA_PROGRAM_ID=8AcadEGS6Vmcj7kcQ8WroPoWioNkBhXFjkH8Db5hSVUX
+```
+
+Ejecutar backend:
+
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000
+python main.py
 ```
 
-### 3. Configurar el Frontend
-Abre otra terminal:
+Backend: `http://localhost:8000`
+
+### 3) Ollama + Qwen (fallback local)
+
+```bash
+ollama pull qwen2.5:7b
+ollama list
+```
+
+### 4) Frontend
+
 ```bash
 cd frontend
 npm install
-```
-Configura tu archivo `.env` en la carpeta `frontend` si tienes variables necesarias. Luego lanza el entorno de desarrollo:
-```bash
 npm run dev
 ```
 
-La aplicación estará disponible en `http://localhost:3000`.
+Frontend: `http://localhost:3000`
+
+Si desplegas backend en otro host, define:
+
+```env
+PUBLIC_BACKEND_URL=https://tu-backend.com/api/v1
+```
 
 ---
 
-## ⚠️ Troubleshooting (Solución de Problemas)
+## ✅ Tests de verificación (Supabase, ElevenLabs, Gemini, Qwen, Solana)
 
-¿Qué pasa si la demo no corre correctamente? Aquí te enseñamos cómo solucionarlo al instante:
+### A. Verificar integraciones externas
 
-- **La IA no responde (API Key Expired):** Verifica que la `GOOGLE_API_KEY` sea válida. Si falla, el sistema pasará automáticamente a **Ollama**. Asegúrate de tener Ollama corriendo (`systemctl start ollama`) y el modelo Qwen2.5 descargado (`ollama run qwen2.5:7b`).
-- **Error en ElevenLabs (Sin Voz):** Revisa que tu `ELEVENLABS_API_KEY` tenga créditos disponibles y el `ELEVENLABS_VOICE_ID` sea correcto.
-- **Error 500 al sellar en Solana:** Revisa que el `SOLANA_PROGRAM_ID` configurado en tu `.env` corresponda exactamente al programa subido en la Devnet. Asegúrate de tener saldo en tu Devnet Wallet (`solana airdrop 2`).
-- **Problemas con Supabase:** Confirma que el `SUPABASE_URL` y la `SUPABASE_KEY` del `.env` sean exactamente las que proporciona el panel de settings en tu proyecto de Supabase. Revisa también que la tabla `medical_records` tenga las columnas correctas.
+```bash
+cd backend
+source .venv/bin/activate
+python test_integrations.py --strict
+```
+
+Valida:
+1. Supabase
+2. Gemini
+3. Ollama/Qwen
+4. ElevenLabs
+5. Solana Devnet
+
+### B. Verificar API end-to-end del backend
+
+Con backend ya corriendo:
+
+```bash
+cd backend
+source .venv/bin/activate
+python test_backend.py --base-url http://localhost:8000 --strict
+```
+
+Valida endpoints:
+- `/`
+- `/api/v1/patients`
+- `/api/v1/patients/{id}/records`
+- `/api/v1/assistant/ask`
+- `/api/v1/assistant/tts`
+- `/api/v1/assistant/seal_record`
 
 ---
 
-## 🔒 Seguridad y Ética
+## 🧭 Paso a paso para desplegar (hackathon-ready)
 
-* **Prompt Estricto:** La IA tiene prohibido inventar datos o dar consejos médicos fuera del historial suministrado.
-* **Privacidad:** Uso de modelos locales para datos extremadamente sensibles. Sellado criptográfico anonimizado en Blockchain.
-* **Gestión de Secretos:** Las claves de API se gestionan mediante variables de entorno local (`.env`).
+### 1) Supabase
+
+1. Crea proyecto Supabase.
+2. Crea tablas `patients` y `medical_records`.
+3. Usa `SUPABASE_URL` + `SUPABASE_KEY` en backend.
+4. Si tu proyecto usa el nuevo comportamiento de Data API (2026), asegura grants explícitos:
+
+```sql
+grant select, insert, update, delete on public.patients to service_role;
+grant select, insert, update, delete on public.medical_records to service_role;
+alter table public.patients enable row level security;
+alter table public.medical_records enable row level security;
+```
+
+### 2) Smart contract (Solana/Anchor)
+
+1. Confirma `program_id` del contrato (`anchor_program/Anchor.toml` y `lib.rs`).
+2. Mantén wallet de devnet con balance:
+
+```bash
+solana airdrop 2
+```
+
+3. Exporta `SOLANA_PROGRAM_ID` en backend.
+
+### 3) Backend (Render/HF/DO)
+
+1. Root: `backend/`
+2. Build: `pip install -r requirements.txt`
+3. Start: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+4. Variables: todas las de `backend/.env`
+
+### 4) Frontend (Vercel/Cloudflare)
+
+1. Root: `frontend/`
+2. Build command: `npm run build`
+3. Variables: `PUBLIC_BACKEND_URL` apuntando al backend de producción.
 
 ---
 
-## 👥 Créditos del Proyecto
+## ⚠️ ¿Qué pasa si la demo no corre correctamente?
 
-Este proyecto está en desarrollo para la **Hackathon Solana Colosseum**:
+| Síntoma | Causa probable | Acción recomendada |
+| --- | --- | --- |
+| `Supabase permission denied` | Falta de grants o credenciales incorrectas | Revisa `SUPABASE_URL/SUPABASE_KEY`, grants explícitos y RLS. |
+| Gemini no responde | API key inválida o agotada | Verifica `GOOGLE_API_KEY`; usa fallback Qwen con Ollama. |
+| Qwen no responde | Ollama detenido o modelo ausente | `ollama list`, luego `ollama pull qwen2.5:7b`. |
+| TTS falla | `ELEVENLABS_API_KEY` inválida/sin créditos | Revisa key y voice id; el backend tiene fallback de voz local. |
+| Error en sellado Solana | Wallet sin saldo, RPC caído o program_id incorrecto | `solana airdrop 2`, revisa `SOLANA_PROGRAM_ID`, repite test backend. |
+| Frontend no conecta al backend | URL de API incorrecta | Ajusta `PUBLIC_BACKEND_URL` o usa `http://localhost:8000/api/v1`. |
 
-- 💻 **Carlos Williams** - Fundador y Desarrollador Principal.
-- 🎨 **Aysha Tovar** - Diseño UX/UI.
-- 🤝 **Santiago Valecillos** - Colaborador (Ediciones previas).
-- 🤝 **Gabriela Carpio** - Colaboradora (Ediciones previas).
+---
+
+## 🔐 Seguridad y buenas prácticas
+
+1. Nunca publiques `SUPABASE_KEY` de tipo `service_role` en frontend.
+2. Mantén secretos solo en variables de entorno.
+3. Usa RLS + políticas explícitas para acceso por rol.
+4. No almacenes PHI sensible en logs.
+5. Mantén rotación periódica de keys API.
+
+---
+
+## 👥 Equipo y créditos
+
+- 💻 **Carlos Williams** — **Fundador y Desarrollador Principal**.
+- 🎨 **Aysha Tovar** — UX/UI Design.
+- 🤝 **Santiago Valecillos** — Colaborador (ediciones previas, no en esta edición).
+- 🤝 **Gabriela Carpio** — Colaboradora (ediciones previas, no en esta edición).
+
+Proyecto preparado para **Solana Colosseum Hackathon** y con continuidad desde **Hackathon 3 Devpack**.
