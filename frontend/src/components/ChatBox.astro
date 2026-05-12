@@ -1,29 +1,110 @@
 ---
+/**
+ * ChatBox.astro — AI Chat Interface
+ *
+ * Core interaction panel. Renders the chat bubbles, skeleton loaders during
+ * inference, suggestion chips, and the input form. The streaming text effect
+ * gives the doctor immediate visual feedback while the full response loads.
+ *
+ * WHY CLIENT-SIDE RENDERING: Chat state is inherently dynamic. Astro's
+ * island architecture lets us ship 0 JS for the static shell, with only
+ * the chat logic hydrated on the client.
+ */
 ---
-<div class="flex-1 overflow-y-auto p-6 space-y-6 bg-white relative" id="chat-messages">
-  <div class="text-center mt-32 text-slate-400">
-    <div class="w-20 h-20 mx-auto mb-6 bg-slate-50 border border-technical flex items-center justify-center">
-      <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+
+<div class="flex-1 flex flex-col overflow-hidden">
+  <!-- Header with AI engine badge -->
+  <div class="bg-white border-b border-technical p-4 flex items-center justify-between z-10">
+    <div>
+      <h2 class="text-sm font-mono font-bold text-slate-800 flex items-center gap-2 uppercase tracking-tighter">
+        <span class="text-blue-600">>></span>
+        Diagnostic_Assistant_Terminal
+      </h2>
+      <div class="flex items-center gap-3 mt-1">
+        <p id="patient-label" class="medical-label">INITIALIZING_PATIENT_RECORDS...</p>
+        <button id="audio-summary-btn" class="hidden px-2 py-0.5 bg-blue-50 text-blue-700 font-mono text-[9px] font-bold border border-blue-200 uppercase tracking-widest transition-colors">AUDIO_STREAM</button>
+      </div>
     </div>
-    <h3 class="text-xl font-black text-slate-900 mb-2 uppercase tracking-tight" data-es="Workspace Médico" data-en="Medical Workspace">Workspace Médico</h3>
-    <p class="max-w-xs mx-auto text-sm leading-relaxed font-mono text-slate-500" data-es="Selecciona un paciente del directorio para iniciar la consulta." data-en="Select a patient from the directory to start consultation.">Selecciona un paciente del directorio para iniciar la consulta.</p>
-  </div>
-</div>
-<div class="bg-white border-t border-technical p-4">
-  <div class="flex items-center justify-between mb-3 px-2">
-    <div class="flex items-center gap-2" id="ai-badge">
-      <span class="w-2 h-2 bg-slate-300"></span>
-      <span class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest" data-es="Inferencia: Espera" data-en="Inference: Standby">Inferencia: Espera</span>
-    </div>
-    <div class="flex items-center gap-1 bg-slate-100 p-0.5 border border-technical">
-      <button id="reply-mode-audio" class="px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition-colors text-slate-500 hover:text-slate-900">Audio</button>
-      <button id="reply-mode-text" class="px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition-colors bg-slate-900 text-white">Texto</button>
+    <div id="ai-badge" class="px-2 py-1 bg-slate-50 text-[10px] font-mono font-bold uppercase tracking-tight text-slate-600 border border-slate-200 flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 bg-slate-400 animate-led"></span>ENGINE: --
     </div>
   </div>
-  <form id="chat-form" class="relative group">
-    <textarea id="chat-input" rows="2" class="w-full bg-slate-50 border border-technical text-slate-900 text-sm font-mono focus:ring-1 focus:ring-primary focus:border-primary block p-4 pr-16 resize-none transition-all outline-none" placeholder="Ingresa síntomas, medidas vitales o preguntas clínicas..." data-es-placeholder="Ingresa síntomas, medidas vitales o preguntas clínicas..." data-en-placeholder="Enter symptoms, vital signs or clinical questions..."></textarea>
-    <button type="submit" id="send-btn" class="absolute right-3 bottom-3 p-2.5 bg-slate-900 hover:bg-black text-white transition-colors disabled:opacity-50 border border-slate-700 glow-blue-hover">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-    </button>
-  </form>
+
+  <!-- Chat messages area -->
+  <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6 bg-white chat-scroll">
+    <div id="chat-placeholder" class="text-center text-slate-500 mt-24">
+      <div class="w-16 h-16 mx-auto mb-6 bg-slate-50 border-technical flex items-center justify-center relative">
+        <div class="absolute inset-0 border-technical scale-90 opacity-30"></div>
+        <span class="text-blue-600 font-mono font-bold text-2xl animate-led">OS</span>
+      </div>
+      <p class="font-mono font-bold text-slate-800 text-sm uppercase tracking-widest">OpenS Diagnostic Terminal</p>
+      <p class="medical-label mt-2">AWAITING_INPUT_OR_SEQUENCE_SELECTION</p>
+    </div>
+  </div>
+
+  <!-- Suggestion chips -->
+  <div id="suggestions" class="px-6 py-4 border-t border-technical bg-white">
+    <div class="flex flex-wrap gap-2">
+      <button class="suggestion-btn px-3 py-1.5 medical-label bg-white border-technical text-slate-600 hover:bg-slate-50 hover:border-blue-400 transition-colors">PATHOLOGY_ANALYSIS</button>
+      <button class="suggestion-btn px-3 py-1.5 medical-label bg-white border-technical text-slate-600 hover:bg-slate-50 hover:border-blue-400 transition-colors">HISTORY_SUMMARY</button>
+      <button class="suggestion-btn px-3 py-1.5 medical-label bg-white border-technical text-slate-600 hover:bg-slate-50 hover:border-blue-400 transition-colors">CURRENT_MEDICATION</button>
+      <button class="suggestion-btn px-3 py-1.5 medical-label bg-white border-technical text-slate-600 hover:bg-slate-50 hover:border-blue-400 transition-colors">DIFFERENTIAL_DIAGNOSIS</button>
+    </div>
+  </div>
+
+  <!-- Input form -->
+  <div class="border-t border-technical p-4 bg-white flex flex-col gap-4">
+    <div class="flex items-center justify-between px-1">
+      <div class="flex flex-wrap items-center gap-6">
+        <div class="flex items-center gap-2">
+          <span class="medical-label">RESPONSE_MODE:</span>
+          <div class="flex items-center bg-slate-50 border-technical p-0.5">
+            <button id="reply-mode-audio" type="button" class="px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-tight transition-colors">
+              AUDIO
+            </button>
+            <button id="reply-mode-text" type="button" class="px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-tight transition-colors">
+              TEXT
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="medical-label">LOCAL_ENGINE:</span>
+          <select id="local-model-select" class="text-[10px] font-mono font-bold bg-slate-50 border-technical px-2 py-1 text-slate-700 outline-none cursor-pointer uppercase">
+            <option value="qwen2.5:7b">QWEN_2.5</option>
+            <option value="kimi-k2">KIMI_K2</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <form id="chat-form" class="flex gap-4">
+      <div class="flex-1 relative">
+        <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-xs">>></div>
+        <input id="chat-input" type="text" placeholder="ENTER_CONSULTATION_QUERY..." class="w-full pl-10 pr-4 py-3 bg-white border-technical text-slate-800 placeholder-slate-400 focus:border-blue-600 outline-none font-mono text-xs uppercase transition-all"/>
+      </div>
+      <button type="submit" id="send-btn" class="px-8 py-3 bg-blue-600 text-white font-bold uppercase tracking-widest text-xs transition-all hover:bg-blue-700 disabled:opacity-50">SEND_CMD</button>
+    </form>
+  </div>
 </div>
+
+<script>
+  // Suggestion chips: on click, populate chat input and submit the form
+  (function(){
+    const suggestions = Array.from(document.querySelectorAll('.suggestion-btn'));
+    const chatInput = document.getElementById('chat-input');
+    const chatForm = document.getElementById('chat-form');
+    if(!suggestions.length || !chatInput || !chatForm) return;
+
+    suggestions.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const txt = (btn.textContent || '').trim();
+        if(!txt) return;
+        // Fill input and trigger the existing submit handler on the page
+        chatInput.value = txt;
+        chatInput.focus();
+        // Dispatch a submit event so the page-level listener handles sending
+        const ev = new Event('submit', { bubbles: true, cancelable: true });
+        chatForm.dispatchEvent(ev);
+      });
+    });
+  })();
+</script>
