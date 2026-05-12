@@ -164,3 +164,4 @@ Este proyecto está en desarrollo para la **Hackathon Solana Colosseum**:
 - 🎨 **Aysha Tovar** - Diseño UX/UI.
 - 🤝 **Santiago Valecillos** - Colaborador (Ediciones previas).
 - 🤝 **Gabriela Carpio** - Colaboradora (Ediciones previas).
+ 
