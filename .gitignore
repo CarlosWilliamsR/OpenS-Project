@@ -30,6 +30,7 @@ build/
 
 # Node / Frontend
 node_modules/
+**/node_modules/
 npm-debug.log
 npm-debug.log.*
 yarn-error.log
@@ -37,6 +38,15 @@ yarn-error.log
 .astro/
 dist/
 *.log
+
+# Rust / Anchor / Solana
+target/
+anchor_program/target/
+anchor_program/.anchor/
+**/target/
+**/*.keypair.json
+**/*-keypair.json
+.anchor/
 
 # IDE
 .vscode/
@@ -53,6 +63,7 @@ thumbs.db
 backend.log
 frontend.log
 *.tmp
+migration_log.json
 
 # Project specific
 all_files.txt

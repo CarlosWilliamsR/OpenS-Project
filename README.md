@@ -106,12 +106,12 @@ cd OpenS
 
 ### 2. Configurar el Backend
 ```bash
-cd backend-ia
+cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
-Configura tu archivo `.env` en la carpeta `backend-ia` usando de guía el archivo existente. Necesitarás:
+Configura tu archivo `.env` en la carpeta `backend` usando de guía el archivo existente. Necesitarás:
 - `GOOGLE_API_KEY`
 - `SUPABASE_URL` y `SUPABASE_KEY`
 - `ELEVENLABS_API_KEY`

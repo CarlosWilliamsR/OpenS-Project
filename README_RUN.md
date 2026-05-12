@@ -23,12 +23,12 @@ cd opens
 Copia la plantilla y edita las variables:
 
 ```bash
-cd backend-ia
+cd backend
 cp .env.example .env
-# Edita backend-ia/.env y agrega SUPABASE_URL, SUPABASE_KEY y, si las tienes, GOOGLE_API_KEY y ELEVENLABS_API_KEY
+# Edita backend/.env y agrega SUPABASE_URL, SUPABASE_KEY y, si las tienes, GOOGLE_API_KEY y ELEVENLABS_API_KEY
 ```
 
-Valores importantes a completar en `backend-ia/.env`:
+Valores importantes a completar en `backend/.env`:
 - `SUPABASE_URL` → URL de tu proyecto Supabase
 - `SUPABASE_KEY` → `service_role` key (no uses `anon` en desarrollo con privilegios)
 - `GOOGLE_API_KEY` → (opcional) para Gemini
@@ -65,7 +65,7 @@ Recomiendo crear un entorno virtual y luego instalar el paquete en modo editable
 
 ```bash
 # Desde la raiz del repo:
-cd backend-ia   # omite esta linea si ya estas dentro de backend-ia
+cd backend   # omite esta linea si ya estas dentro de backend
 python3 -m venv .venv
 
 # Activa el entorno segun tu shell
@@ -150,7 +150,7 @@ curl http://localhost:8001/api/v1/local-models
 Se agregaron estos archivos para contenedores:
 
 - `docker-compose.yml`
-- `backend-ia/Dockerfile`
+- `backend/Dockerfile`
 - `frontend/Dockerfile`
 
 Paso a paso:
@@ -158,8 +158,8 @@ Paso a paso:
 1. Asegura el archivo de variables del backend:
 
 ```bash
-cp backend-ia/.env.example backend-ia/.env
-# edita backend-ia/.env con tus credenciales reales
+cp backend/.env.example backend/.env
+# edita backend/.env con tus credenciales reales
 ```
 
 2. (Opcional) Si usarás Ollama local en tu host Linux, levanta Ollama antes:
