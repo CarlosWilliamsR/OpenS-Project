@@ -90,12 +90,12 @@
   // Suggestion chips: on click, populate chat input and submit the form
   (function(){
     const suggestions = Array.from(document.querySelectorAll('.suggestion-btn'));
-    const chatInput = document.getElementById('chat-input');
+    const chatInput = document.getElementById('chat-input') as HTMLInputElement;
     const chatForm = document.getElementById('chat-form');
     if(!suggestions.length || !chatInput || !chatForm) return;
 
     suggestions.forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', () => {
         const txt = (btn.textContent || '').trim();
         if(!txt) return;
         // Fill input and trigger the existing submit handler on the page

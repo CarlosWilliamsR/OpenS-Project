@@ -31,20 +31,20 @@
   const tabLocal = document.getElementById('tab-local');
   const tabSupabase = document.getElementById('tab-supabase');
   
-  function setActiveTab(tab) {
+  function setActiveTab(tab: string) {
     const activeClasses = ['border-primary', 'text-primary'];
     const inactiveClasses = ['border-transparent', 'text-slate-400', 'hover:text-slate-700'];
     
     if (tab === 'local') {
-      tabLocal.classList.add(...activeClasses);
-      tabLocal.classList.remove(...inactiveClasses);
-      tabSupabase.classList.remove(...activeClasses);
-      tabSupabase.classList.add(...inactiveClasses);
+      tabLocal?.classList.add(...activeClasses);
+      tabLocal?.classList.remove(...inactiveClasses);
+      tabSupabase?.classList.remove(...activeClasses);
+      tabSupabase?.classList.add(...inactiveClasses);
     } else {
-      tabSupabase.classList.add(...activeClasses);
-      tabSupabase.classList.remove(...inactiveClasses);
-      tabLocal.classList.remove(...activeClasses);
-      tabLocal.classList.add(...inactiveClasses);
+      tabSupabase?.classList.add(...activeClasses);
+      tabSupabase?.classList.remove(...inactiveClasses);
+      tabLocal?.classList.remove(...activeClasses);
+      tabLocal?.classList.add(...inactiveClasses);
     }
     
     // Dispatch event for asistente.astro to handle

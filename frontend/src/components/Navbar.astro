@@ -23,18 +23,18 @@
   const esBtn = document.getElementById('lang-es-btn');
   const enBtn = document.getElementById('lang-en-btn');
 
-  function setLanguage(lang) {
+  function setLanguage(lang: string) {
     localStorage.setItem('opens_lang', lang);
     if (lang === 'es') {
-      esBtn.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
-      esBtn.classList.remove('text-slate-500', 'hover:text-slate-900');
-      enBtn.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
-      enBtn.classList.add('text-slate-500', 'hover:text-slate-900');
+      esBtn?.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+      esBtn?.classList.remove('text-slate-500', 'hover:text-slate-900');
+      enBtn?.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
+      enBtn?.classList.add('text-slate-500', 'hover:text-slate-900');
     } else {
-      enBtn.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
-      enBtn.classList.remove('text-slate-500', 'hover:text-slate-900');
-      esBtn.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
-      esBtn.classList.add('text-slate-500', 'hover:text-slate-900');
+      enBtn?.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+      enBtn?.classList.remove('text-slate-500', 'hover:text-slate-900');
+      esBtn?.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
+      esBtn?.classList.add('text-slate-500', 'hover:text-slate-900');
     }
     const event = new CustomEvent('languageChanged', { detail: { lang } });
     document.dispatchEvent(event);

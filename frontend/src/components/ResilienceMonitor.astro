@@ -25,7 +25,8 @@
   const sel = document.getElementById('local-model-select');
   const led = document.getElementById('led-indicator');
   sel?.addEventListener('change', (e) => {
-    if (e.target.value === 'gemini') {
+    if (!led) return;
+    if ((e.target as HTMLSelectElement).value === 'gemini') {
       led.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_rgba(16,185,129,0.8)]';
     } else {
       led.className = 'w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_5px_rgba(251,191,36,0.8)]';

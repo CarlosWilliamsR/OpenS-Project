@@ -11,24 +11,27 @@
 </div>
 
 <script>
-  const canvas = document.getElementById('voice-canvas');
-  const ctx = canvas.getContext('2d');
-  const audio = document.getElementById('voice-audio');
+  const canvas = document.getElementById('voice-canvas') as HTMLCanvasElement;
+  const ctx = canvas?.getContext('2d') as CanvasRenderingContext2D;
+  const audio = document.getElementById('voice-audio') as HTMLAudioElement;
   const statusEl = document.getElementById('audio-status');
   
   function resizeCanvas() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    if(canvas) {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
   }
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
-  let audioCtx, analyser, source, dataArray;
+  let audioCtx: any, analyser: any, source: any, dataArray: any;
   let isPlaying = false;
 
-  audio.addEventListener('play', () => {
+  audio?.addEventListener('play', () => {
     if(!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      audioCtx = new AudioContextClass();
       analyser = audioCtx.createAnalyser();
       source = audioCtx.createMediaElementSource(audio);
       source.connect(analyser);
@@ -46,7 +49,7 @@
     drawEKG();
   });
 
-  audio.addEventListener('pause', () => {
+  audio?.addEventListener('pause', () => {
     isPlaying = false;
     if (statusEl) {
       statusEl.textContent = localStorage.getItem('opens_lang') === 'en' ? 'STANDBY' : 'ESPERA';
@@ -55,7 +58,7 @@
     drawFlatline();
   });
   
-  audio.addEventListener('ended', () => {
+  audio?.addEventListener('ended', () => {
     isPlaying = false;
     if (statusEl) {
       statusEl.textContent = localStorage.getItem('opens_lang') === 'en' ? 'STANDBY' : 'ESPERA';
@@ -65,7 +68,7 @@
   });
 
   function drawEKG() {
-    if(!isPlaying) return;
+    if(!isPlaying || !analyser || !ctx || !canvas) return;
     requestAnimationFrame(drawEKG);
     analyser.getByteTimeDomainData(dataArray);
 
@@ -94,6 +97,7 @@
   }
 
   function drawFlatline() {
+    if(!ctx || !canvas) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.lineWidth = 1.5;
     ctx.strokeStyle = '#0052FF';
