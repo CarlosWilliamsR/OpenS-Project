@@ -161,13 +161,15 @@ async def persist_record_to_supabase(
     chain_result = await seal_diagnosis_on_chain(patient_id, diagnosis_text)
     supabase = get_supabase_client()
 
+    import datetime
+    
     record_payload = {
         "patient_id": patient_id,
         "medical_hash": chain_result["medical_hash"],
         "transaction_signature": chain_result["tx_signature"],
         "description": notes or "",
         "diagnosis": diagnosis_text,
-        "date": date or "",
+        "date": date if date else datetime.datetime.utcnow().isoformat(),
     }
 
     response = supabase.table("medical_records").insert(record_payload).execute()
