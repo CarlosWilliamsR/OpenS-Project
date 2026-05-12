@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/CarlosWilliamsR/OpenS-Project/main/public/Favicon.jpeg" alt="OpenS Logo" width="150" height="150" />
+  <img src="https://raw.githubusercontent.com/CarlosWilliamsR/OpenS-Project/main/public/logo.png" alt="OpenS Logo" width="150" height="150" />
   <h1>OpenS: El CRM Médico Inteligente con Arquitectura Híbrida</h1>
   <p><em>Fortaleciendo la atención primaria de salud con IA, Voice Synthesis y Blockchain.</em></p>
 
