@@ -184,6 +184,11 @@ async def synthesize_voice(text: str) -> bytes:
     if not ELEVENLABS_API_KEY:
         raise HTTPException(status_code=500, detail="ElevenLabs configuration is missing.")
 
+    # Clean markdown and truncate text to avoid ElevenLabs limits on free tier
+    clean_text = text.replace("*", "").replace("#", "")
+    if len(clean_text) > 500:
+        clean_text = clean_text[:497] + "..."
+
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
     headers = {
         "xi-api-key": ELEVENLABS_API_KEY,
@@ -191,7 +196,7 @@ async def synthesize_voice(text: str) -> bytes:
         "content-type": "application/json",
     }
     payload = {
-        "text": text,
+        "text": clean_text,
         "model_id": ELEVENLABS_MODEL_ID,
         "voice_settings": {
             "stability": 0.5,
@@ -205,6 +210,7 @@ async def synthesize_voice(text: str) -> bytes:
         response = await client.post(url, headers=headers, json=payload)
 
     if response.status_code >= 400:
+        print(f"ElevenLabs Error: {response.status_code} - {response.text}")
         raise HTTPException(status_code=502, detail=f"ElevenLabs error: {response.text}")
 
     return response.content
