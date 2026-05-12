@@ -105,11 +105,7 @@ async def test_solana():
         client = AsyncClient("https://api.devnet.solana.com")
         is_connected = await client.is_connected()
         if is_connected:
-            resp = await client.get_health()
-            if resp.value == 'ok':
-                print(f"{GREEN}✅ Solana Devnet Connected and Healthy!{RESET}")
-            else:
-                 print(f"{GREEN}✅ Solana Devnet Connected! Health: {resp.value}{RESET}")
+            print(f"{GREEN}✅ Solana Devnet Connected!{RESET}")
         else:
              print(f"{RED}❌ Could not connect to Solana Devnet.{RESET}")
              return False

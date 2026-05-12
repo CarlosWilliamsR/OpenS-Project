@@ -27,7 +27,8 @@ export default {
     try {
       const res = await fetch(`${API_BASE}/patients/${patientId}/records`);
       if (!res.ok) return [];
-      return await res.json();
+      const data = await res.json();
+      return data.records || [];
     } catch {
       return [];
     }
