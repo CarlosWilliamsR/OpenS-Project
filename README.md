@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/CarlosWilliamsR/OpenS-Project/main/shared-assets/branding/favicon.jpeg" alt="OpenS Logo" width="150" height="150" />
   <h1>OpenS: El CRM Médico Inteligente Web3</h1>
   <p><em>Construido para la Hackathon Solana Colosseum (Participante destacado en Hackathon 3devpack)</em></p>
   <p><em>Fortaleciendo la atención primaria de salud con IA, Voice Synthesis y Blockchain.</em></p>
