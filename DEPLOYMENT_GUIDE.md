@@ -21,7 +21,7 @@ El backend requiere Python y manejar integraciones. Las mejores opciones gratuit
 ### Opción A: Render (Capa Gratuita)
 1. Ve a [Render.com](https://render.com) e inicia sesión.
 2. Crea un nuevo **Web Service** conectado a tu repo de GitHub.
-3. **Root Directory**: `backend`
+3. **Root Directory**: `backend-ia`
 4. **Environment**: `Python 3`
 5. **Build Command**: `pip install -r requirements.txt`
 6. **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
@@ -30,7 +30,7 @@ El backend requiere Python y manejar integraciones. Las mejores opciones gratuit
 8. Selecciona el plan **Free** y haz clic en Deploy.
 
 ### Opción B: Hugging Face Spaces (Gratis / Docker)
-Como ya tienes un `Dockerfile` en `backend`:
+Como ya tienes un `Dockerfile` en `backend-ia`:
 1. Ve a [Hugging Face Spaces](https://huggingface.co/spaces).
 2. Crea un **New Space**.
 3. Selecciona **Docker** como el SDK.

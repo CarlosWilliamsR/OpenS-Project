@@ -1,0 +1,23 @@
+---
+const { title } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style is:global>
+    body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .technical-border { border: 1px solid #e2e8f0; }
+    .medical-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    .medical-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; }
+    .medical-value { font-size: 1rem; font-weight: 600; color: #0f172a; }
+  </style>
+</head>
+<body class="text-slate-900 bg-slate-50 min-h-screen">
+  <slot />
+</body>
+</html>

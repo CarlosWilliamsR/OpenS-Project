@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<BaseLayout title="Portal del Paciente - OpenS">
+  <Navbar />
+  <main class="max-w-4xl mx-auto px-4 py-10">
+    <!-- Patient profile loaded from Supabase -->
+    <div id="patient-profile" class="text-center mb-10">
+      <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center mx-auto mb-4 shadow-xl shadow-indigo-200">
+        <span id="profile-initials" class="text-white text-3xl font-extrabold">—</span>
+      </div>
+      <h1 id="profile-name" class="text-3xl font-extrabold text-slate-900">Cargando...</h1>
+      <p id="profile-sub" class="text-slate-500 mt-1"></p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <div class="p-6 rounded-2xl border border-slate-200 bg-white">
+        <h2 class="font-bold text-slate-800 mb-4">Datos del Paciente</h2>
+        <label class="block text-xs font-semibold text-slate-500 mb-2">Seleccionar paciente</label>
+        <select id="patient-selector" class="w-full mb-4 px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+          <option value="">Cargando...</option>
+        </select>
+        <div id="profile-details" class="space-y-3 text-sm">
+          <p class="text-slate-400">Cargando datos desde Supabase...</p>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-2xl border border-slate-200 bg-white text-center flex flex-col items-center justify-center">
+        <h2 class="font-bold text-slate-800 mb-4">Código QR</h2>
+        <div class="w-40 h-40 bg-slate-100 rounded-2xl border-2 border-dashed border-slate-300 flex items-center justify-center">
+          <span id="profile-code" class="text-slate-500 text-xs text-center px-3">Portabilidad de datos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline from Supabase -->
+    <div class="p-6 rounded-2xl border border-slate-200 bg-white">
+      <h2 class="font-bold text-slate-800 mb-6">Historial Médico</h2>
+      <div id="patient-records" class="relative pl-8 space-y-6 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-indigo-200">
+        <p class="text-sm text-slate-400 text-center py-4 pl-0">Cargando registros...</p>
+      </div>
+    </div>
+
+    <button id="download-history-btn" class="fixed bottom-6 right-6 z-40 px-5 py-3 rounded-xl bg-slate-900 text-white text-sm font-bold shadow-xl shadow-slate-900/30 hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+      Descargar historial PDF
+    </button>
+  </main>
+</BaseLayout>
+
+<script>
+  import { jsPDF } from 'jspdf';
+  const API = '/api/v1';
+  const downloadHistoryBtn = document.getElementById('download-history-btn') as HTMLButtonElement;
+
+  async function apiFetch(path: string) {
+    try { const r = await fetch(path); if (r.ok) return await r.json(); } catch {}
+    try { const r = await fetch(`http://localhost:8001${path}`); if (r.ok) return await r.json(); } catch {}
+    return null;
+  }
+
+  function initials(name: string) {
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  let allPatients: any[] = [];
+  let currentPatient: any = null;
+  let currentRecords: any[] = [];
+  let isGeneratingPdf = false;
+
+  function esc(value: any) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  async function renderPatient(patient: any) {
+    currentPatient = patient;
+    const name = patient.name || 'Sin nombre';
+    document.getElementById('profile-initials')!.textContent = initials(name);
+    document.getElementById('profile-name')!.textContent = name;
+    document.getElementById('profile-sub')!.textContent = `ID: ${patient.id}`;
+    document.getElementById('profile-code')!.textContent = `REF-${patient.id}`;
+
+    const details: string[] = [];
+    if (patient.email) details.push(`<div class="flex justify-between"><span class="text-slate-500">Email</span><span class="font-medium">${patient.email}</span></div>`);
+    if (patient.phone) details.push(`<div class="flex justify-between"><span class="text-slate-500">Teléfono</span><span class="font-medium">${patient.phone}</span></div>`);
+    details.push(`<div class="flex justify-between"><span class="text-slate-500">ID</span><span class="font-medium">${patient.id}</span></div>`);
+    document.getElementById('profile-details')!.innerHTML = details.join('');
+
+    const recData = await apiFetch(`${API}/patients/${patient.id}/records`);
+    const records = recData?.records || [];
+    currentRecords = records;
+    downloadHistoryBtn.disabled = !records.length;
+    const container = document.getElementById('patient-records')!;
+    if (records.length === 0) {
+      container.innerHTML = '<p class="text-sm text-slate-400 text-center py-4 pl-0">Sin registros médicos.</p>';
+      return;
+    }
+    const icons: Record<string, {emoji: string; bg: string}> = {
+      cardiology: {emoji: '❤', bg: 'bg-red-100'},
+      lab: {emoji: '🧪', bg: 'bg-purple-100'},
+      prescription: {emoji: '💊', bg: 'bg-blue-100'},
+    };
+    container.innerHTML = records.map((r: any) => {
+      const type = r.type || 'general';
+      const {emoji, bg} = icons[type] || {emoji: '📋', bg: 'bg-slate-100'};
+      const date = r.date || r.created_at || '';
+      const dateStr = date ? new Date(date).toLocaleDateString('es', {year: 'numeric', month: 'short', day: 'numeric'}) : '';
+      return `<div class="relative animate-fade-in">
+        <div class="absolute -left-8 w-6 h-6 rounded-full ${bg} flex items-center justify-center border-2 border-white shadow"><span class="text-xs">${emoji}</span></div>
+        <div class="bg-slate-50 rounded-xl p-4">
+          <p class="text-xs font-semibold text-indigo-600 mb-1">${dateStr}</p>
+          <h3 class="font-bold text-slate-800">${r.description || 'Registro'}</h3>
+          ${r.diagnosis ? `<p class="text-sm text-slate-600 mt-1">${r.diagnosis}</p>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function downloadHistoryPdf() {
+    if (!currentPatient || !currentRecords.length || isGeneratingPdf) return;
+    isGeneratingPdf = true;
+    const prevText = downloadHistoryBtn.textContent || 'Descargar historial PDF';
+    downloadHistoryBtn.textContent = 'Generando PDF...';
+    downloadHistoryBtn.setAttribute('disabled', 'true');
+
+    try {
+      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+      const left = 40;
+      const maxWidth = 530;
+      const lineHeight = 16;
+      let y = 50;
+
+      const ensureSpace = (needed = 24) => {
+        if (y + needed > 760) {
+          doc.addPage();
+          y = 50;
+        }
+      };
+
+      const writeLine = (text: string, bold = false, size = 11) => {
+        ensureSpace();
+        doc.setFont('helvetica', bold ? 'bold' : 'normal');
+        doc.setFontSize(size);
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach((line: string) => {
+          ensureSpace();
+          doc.text(line, left, y);
+          y += lineHeight;
+        });
+      };
+
+      writeLine('Historial Medico OpenS', true, 18);
+      y += 4;
+      writeLine(`Paciente: ${currentPatient.name || `Paciente ${currentPatient.id}`}`, true, 12);
+      writeLine(`ID: ${currentPatient.id}`, false, 11);
+      y += 8;
+
+      currentRecords.forEach((r: any, idx: number) => {
+        const date = r.date || r.created_at || '';
+        const dateStr = date ? new Date(date).toLocaleDateString('es', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Sin fecha';
+        writeLine(`${idx + 1}. ${dateStr}`, true, 12);
+        writeLine(`Motivo: ${r.description || 'Registro'}`);
+        if (r.diagnosis) writeLine(`Diagnostico: ${r.diagnosis}`);
+        y += 6;
+      });
+
+      doc.save(`OpenS_Historial_${currentPatient.name || currentPatient.id}.pdf`);
+    } catch (err) {
+      console.error('Error generando PDF de historial:', err);
+      alert('No se pudo generar el PDF del historial. Revisa conexión y vuelve a intentar.');
+    } finally {
+      isGeneratingPdf = false;
+      downloadHistoryBtn.textContent = prevText;
+      downloadHistoryBtn.disabled = !currentRecords.length;
+    }
+  }
+
+  // Load patients from Supabase
+  (async () => {
+    const data = await apiFetch(`${API}/patients`);
+    allPatients = data?.patients || [];
+    const selector = document.getElementById('patient-selector') as HTMLSelectElement;
+
+    if (allPatients.length === 0) {
+      document.getElementById('profile-name')!.textContent = 'Sin pacientes';
+      document.getElementById('profile-sub')!.textContent = 'No hay pacientes registrados en Supabase';
+      selector.innerHTML = '<option value="">Sin pacientes</option>';
+      document.getElementById('profile-details')!.innerHTML = '<p class="text-slate-400">Configure la base de datos Supabase.</p>';
+      document.getElementById('patient-records')!.innerHTML = '<p class="text-sm text-slate-400 text-center py-4 pl-0">Sin registros.</p>';
+      return;
+    }
+
+    selector.innerHTML = allPatients
+      .map((p: any) => `<option value="${p.id}">${p.name || `Paciente ${p.id}`}</option>`)
+      .join('');
+    selector.addEventListener('change', () => {
+      const selected = allPatients.find((p: any) => String(p.id) === selector.value);
+      if (selected) renderPatient(selected);
+    });
+
+    const firstPatient = allPatients[0];
+    selector.value = String(firstPatient.id);
+    await renderPatient(firstPatient);
+  })();
+
+  downloadHistoryBtn?.addEventListener('click', downloadHistoryPdf);
+</script>
